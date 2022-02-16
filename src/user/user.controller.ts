@@ -1,5 +1,4 @@
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 import { User } from 'src/shared/decorators/user.decorator';
 import { USER_SENSITIVE_FIELDS } from './enums/protected-fields.enum';
 import { IReadableUser } from './interfaces/readable-user.interface';
@@ -7,7 +6,7 @@ import { IUser } from './interfaces/user.interface';
 import { UserService } from './user.service';
 import * as _ from 'lodash';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
     constructor(private readonly userService: UserService) { }
 

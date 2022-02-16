@@ -1,0 +1,26 @@
+import * as mongoose from 'mongoose';
+import { toSlug } from 'src/utils/string.util';
+import { SIZE } from '../enums/size.enum';
+import { IProduct } from '../interfaces/product.interface';
+
+export const productSchema = new mongoose.Schema(
+    {
+        title: { type: String, required: true, unique: true },
+        slug: { type: String, unique: true },
+        quantity: { type: Number, default: 0 },
+        price: { type: Number, default: 0 },
+        maxPrice: { type: Number, default: 0 },
+        summary: { type: String, default: '' },
+        content: { type: String, default: '' },
+        rating: { type: Number, default: 0 },
+        size: { type: String, required: true, enum: Object.values(SIZE) },
+        productMeta: { type: mongoose.Schema.Types.ObjectId, ref: "ProductMeta" },
+        category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" }
+    },
+    { timestamps: true }
+);
+
+productSchema.pre<IProduct>("save", function (next) {
+    this.slug = toSlug(this.title)
+    next();
+});   

@@ -11,12 +11,22 @@ import { MailModule } from './mail/mail.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { RolesGuard } from './shared/guards/roles.guard';
+import { ProductModule } from './product/product.module';
+import { ProductMetaModule } from './productMeta/productMeta.module';
+import { CategoryModule } from './category/category.module';
+import { ProductCategoryModule } from './product-category/product-category.module';
 
 @Module({
   imports: [
     UserModule,
     AuthModule,
     configModule,
+    TokenModule,
+    MailModule,
+    ProductModule,
+    ProductMetaModule,
+    CategoryModule,
+    ProductCategoryModule,
     MongooseModule.forRoot(
       process.env.MONGODB_WRITE_CONNECTION_STRING,
       {
@@ -24,8 +34,6 @@ import { RolesGuard } from './shared/guards/roles.guard';
         useUnifiedTopology: true,
       },
     ),
-    TokenModule,
-    MailModule,
   ],
   providers: [
     {
