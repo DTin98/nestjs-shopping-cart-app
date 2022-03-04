@@ -1,23 +1,23 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateCategoryDto } from './dto/create-product.dto';
-import { ICategory } from './interfaces/category.interface';
+import { CreateCartDto } from './dto/create-cart.dto';
+import { ICart } from './interfaces/order.interface';
 
 @Injectable()
-export class CategoryService {
-    constructor(@InjectModel('Category') private readonly categoryModel: Model<ICategory>) { }
+export class CartService {
+    constructor(@InjectModel('Category') private readonly categoryModel: Model<ICart>) { }
 
-    async create(createCategoryDto: CreateCategoryDto): Promise<ICategory> {
+    async create(createCategoryDto: CreateCartDto): Promise<ICart> {
         const category = new this.categoryModel(createCategoryDto);
         return category.save();
     }
 
-    async find(): Promise<ICategory[]> {
+    async find(): Promise<ICart[]> {
         return this.categoryModel.find();
     }
 
-    async findOne(id: string): Promise<ICategory> {
+    async findOne(id: string): Promise<ICart> {
         return this.categoryModel.findOne({ _id: id });
     }
 

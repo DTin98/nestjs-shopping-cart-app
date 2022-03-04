@@ -14,7 +14,8 @@ import { RolesGuard } from './shared/guards/roles.guard';
 import { ProductModule } from './product/product.module';
 import { ProductMetaModule } from './productMeta/productMeta.module';
 import { CategoryModule } from './category/category.module';
-import { ProductCategoryModule } from './product-category/product-category.module';
+import { CartModule } from './cart/cart.module';
+import { CartItemModule } from './cartItem/cartItem.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { ProductCategoryModule } from './product-category/product-category.modul
     ProductModule,
     ProductMetaModule,
     CategoryModule,
-    ProductCategoryModule,
+    CartModule,
+    CartItemModule,
     MongooseModule.forRoot(
       process.env.MONGODB_WRITE_CONNECTION_STRING,
       {

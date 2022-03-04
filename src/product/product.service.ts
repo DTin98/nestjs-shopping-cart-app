@@ -29,5 +29,4 @@ export class ProductService {
         return await this.productModel.deleteOne({ _id: id });
     }
 
-
 }

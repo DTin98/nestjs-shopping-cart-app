@@ -1,30 +1,30 @@
 import { Body, Controller, Delete, Get, Param, Post, ValidationPipe } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from "src/shared/decorators/public.decorator";
-import { CategoryService } from "./category.service";
-import { CreateCategoryDto } from "./dto/create-product.dto";
-import { ICategory } from "./interfaces/category.interface";
+import { CartItemService } from "./cartItem.service";
+import { CreateCartItemDto } from "./dto/create-cart-item.dto";
+import { ICartItem } from "./interfaces/cartItem.interface";
 
 @Controller('categories')
 @ApiTags('category')
-export class CategoryController {
-    constructor(private readonly categoryService: CategoryService) { }
+export class CartItemController {
+    constructor(private readonly categoryService: CartItemService) { }
 
     @Get('/')
     @Public()
-    async getAll(): Promise<ICategory[]> {
+    async getAll(): Promise<ICartItem[]> {
         return this.categoryService.find();
     }
 
     @Get('/:id')
     @Public()
-    async getOne(@Param('id') id: string): Promise<ICategory> {
+    async getOne(@Param('id') id: string): Promise<ICartItem> {
         return this.categoryService.findOne(id);
     }
 
     @Post('/')
     @Public()
-    async create(@Body(new ValidationPipe()) createCategoryDto: CreateCategoryDto): Promise<ICategory> {
+    async create(@Body(new ValidationPipe()) createCategoryDto: CreateCartItemDto): Promise<ICartItem> {
         return this.categoryService.create(createCategoryDto);
     }
 

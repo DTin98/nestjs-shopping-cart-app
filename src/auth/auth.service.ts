@@ -46,7 +46,7 @@ export class AuthService {
         const readableUser = createdUser.toObject() as IReadableUser;
         readableUser.accessToken = token;
         await this.sendConfirmation(createdUser, token);
-        return _.omit<any>(readableUser, Object.values(USER_SENSITIVE_FIELDS)) as IReadableUser;
+        return _.omit<IReadableUser>(readableUser, Object.values(USER_SENSITIVE_FIELDS)) as IReadableUser;
     }
 
     async signIn({ email, password }: SignInDto): Promise<IReadableUser> {
@@ -57,7 +57,7 @@ export class AuthService {
             const readableUser = user.toObject() as IReadableUser;
             readableUser.accessToken = token;
 
-            return _.omit<any>(readableUser, Object.values(USER_SENSITIVE_FIELDS)) as IReadableUser;
+            return _.omit<IReadableUser>(readableUser, Object.values(USER_SENSITIVE_FIELDS)) as IReadableUser;
         }
         throw new BadRequestException('Invalid credentials');
     }

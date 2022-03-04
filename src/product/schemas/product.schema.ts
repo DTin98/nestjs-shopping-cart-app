@@ -10,12 +10,13 @@ export const productSchema = new mongoose.Schema(
         quantity: { type: Number, default: 0 },
         price: { type: Number, default: 0 },
         maxPrice: { type: Number, default: 0 },
+        isHighlight: { type: Boolean, default: false },
         summary: { type: String, default: '' },
         content: { type: String, default: '' },
         rating: { type: Number, default: 0 },
         size: { type: String, required: true, enum: Object.values(SIZE) },
         productMeta: { type: mongoose.Schema.Types.ObjectId, ref: "ProductMeta" },
-        category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" }
+        category: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }]
     },
     { timestamps: true }
 );
@@ -23,4 +24,4 @@ export const productSchema = new mongoose.Schema(
 productSchema.pre<IProduct>("save", function (next) {
     this.slug = toSlug(this.title)
     next();
-});   
+});

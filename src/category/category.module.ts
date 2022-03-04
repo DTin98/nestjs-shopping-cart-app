@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { CategorySchema } from './schemas/category.schema';
+import { categorySchema } from './schemas/category.schema';
 
-import { ProductService } from './category.service';
+import { CategoryService } from './category.service';
 import { CategoryController } from './category.controller';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Product', schema: CategorySchema }]),
+    MongooseModule.forFeature([{ name: 'Category', schema: categorySchema }]),
     PassportModule.register({ defaultStrategy: 'jwt' }),],
-  providers: [ProductService],
+  providers: [CategoryService],
   controllers: [CategoryController],
-  exports: [ProductService],
+  exports: [CategoryService],
 })
 export class CategoryModule { }
