@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, ValidationPipe } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from "src/shared/decorators/public.decorator";
 import { User } from "src/shared/decorators/user.decorator";
@@ -21,10 +21,11 @@ export class CartController {
     @Get('/:id')
     @Public()
     async getOne(@Param('id') id: string): Promise<ICart> {
-        return this.cartService.findOne(id);
+        return this.cartService.findOneByUser(id);
     }
 
     @Post('/add-product/:productId')
+    @HttpCode(HttpStatus.OK)
     async createCart(@User() user: IUser, @Param('productId') productId: string, @Body(new ValidationPipe()) createCartDto: CreateCartDto): Promise<ICart> {
         return this.cartService.createCartUser(user._id, productId, createCartDto);
     }

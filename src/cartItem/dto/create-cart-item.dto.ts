@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCartItemDto {
@@ -7,11 +7,14 @@ export class CreateCartItemDto {
   productId: string;
 
   @ApiProperty()
-  quantity: number;
+  @IsOptional()
+  quantity?: number;
 
   @ApiProperty()
-  metaTitle: string;
+  @IsOptional()
+  metaTitle?: string;
 
   @ApiProperty()
-  content: string;
+  @IsOptional()
+  content?: string;
 }

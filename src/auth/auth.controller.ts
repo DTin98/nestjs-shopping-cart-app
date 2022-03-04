@@ -17,7 +17,7 @@ import { Public } from 'src/shared/decorators/public.decorator';
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
-    @Post('/signUp')
+    @Post('/sign-up')
     @Public()
     async signUp(@Body(new ValidationPipe()) createUserDto: CreateUserDto): Promise<IReadableUser> {
         return this.authService.signUp(createUserDto);
@@ -30,19 +30,19 @@ export class AuthController {
         return true;
     }
 
-    @Post('/signIn')
+    @Post('/sign-in')
     @Public()
     async signIn(@Body(new ValidationPipe()) signInDto: SignInDto): Promise<IReadableUser> {
         return await this.authService.signIn(signInDto);
     }
 
-    @Post('/forgotPassword')
+    @Post('/forgot-password')
     @Public()
     async forgotPassword(@Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto): Promise<void> {
         return this.authService.forgotPassword(forgotPasswordDto);
     }
 
-    @Patch('/changePassword')
+    @Patch('/change-password')
     async changePassword(
         @User() user: IUser,
         @Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto,
