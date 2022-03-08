@@ -14,6 +14,10 @@ export class CartService {
         private readonly cartItemService: CartItemService,
     ) { }
 
+    async getCart(userId: string): Promise<ICart> {
+        return this.cartModel.findOne({ userId: userId }).populate('cartItems', null, null, { populate: { path: 'product' } });
+    }
+
     async createCartUser(userId: string, productId: string, createCartDto: CreateCartDto): Promise<ICart> {
         const cart = await this.findOneByUser(userId);
         if (!!cart) {
