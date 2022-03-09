@@ -1,16 +1,16 @@
-import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateCartDto {
+class CartItem {
   @ApiProperty()
-  cartItem: string;
+  cartItemId: string;
 
   @ApiProperty()
   quantity: number;
+}
 
-  @ApiProperty()
-  metaTitle: string;
-
-  @ApiProperty()
-  content: string;
+export class UpdateCartDto {
+  @IsNotEmpty()
+  @ApiProperty({ type: [CartItem] })
+  cartItems: CartItem[];
 }

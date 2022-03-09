@@ -14,8 +14,12 @@ export class CartService {
         private readonly cartItemService: CartItemService,
     ) { }
 
-    async getCart(userId: string): Promise<ICart> {
+    async getUserCart(userId: string): Promise<ICart> {
         return this.cartModel.findOne({ userId: userId }).populate('cartItems', null, null, { populate: { path: 'product' } });
+    }
+
+    async getCart(cartId: string): Promise<ICart> {
+        return this.cartModel.findOne({ _id: cartId }).populate('cartItems', null, null, { populate: { path: 'product' } });
     }
 
     async createCartUser(userId: string, productId: string, createCartDto: CreateCartDto): Promise<ICart> {
@@ -23,22 +27,22 @@ export class CartService {
         if (!!cart) {
             return await this.addProductToCart(cart._id, productId);
         }
-        const newCart: ICart = new this.cartModel({ userId: userId, ...createCartDto });
+        const newCart = new this.cartModel({ userId: userId, ...createCartDto });
         await newCart.save();
         return await this.addProductToCart(newCart._id, productId);
     }
 
     async addProductToCart(cartId: string, productId: string): Promise<ICart> {
-        const newCartItem: ICartItem = await this.cartItemService.create({ productId: productId });
+        const newCartItem = await this.cartItemService.create({ productId: productId });
         await this.cartModel.updateOne({ _id: cartId }, { $addToSet: { cartItems: newCartItem } });
         return await this.cartModel.findOne({ _id: cartId }).populate('cartItems', null, null, { populate: { path: 'product' } });
     }
 
-    async addProductToCartUser(userId: string, productId: string): Promise<ICart> {
-        const cart: ICart = await this.findOneByUser(userId);
+    async addProductToUserCart(userId: string, productId: string): Promise<ICart> {
+        const cart = await this.findOneByUser(userId);
         if (!!cart) {
-            const cartItem: ICartItem = await this.cartItemService.create({ productId: productId });
-            await this.cartModel.updateOne({ _id: cart._id }, { $push: { cartItems: cartItem } })
+            const cartItem = await this.cartItemService.create({ productId: productId });
+            await this.cartModel.updateOne({ _id: cart._id }, { $addToSet: { cartItems: cartItem } })
         }
         return await this.findOneByUser(userId);
     }
@@ -52,7 +56,19 @@ export class CartService {
     }
 
     async update(cartId: string, updateCartDto: UpdateCartDto): Promise<ICart> {
-        return this.cartModel.updateOne({ cartId: cartId }, updateCartDto);
+        const cart = await this.cartModel.findOne({ _id: cartId }).populate('cartItems');
+        if (!cart)
+            throw new BadRequestException("Cart id is not found");
+
+        for (const cartItem of cart.cartItems) {
+            for (const cartItemToUpdate of updateCartDto.cartItems) {
+                if (cartItem._id === cartItemToUpdate.cartItemId) {
+                    await this.cartItemService.
+                }
+            }
+        }
+        await cart.update({ cartItems: { quantity: 9 } });
+        return await this.getCart(cart._id)
     }
 
     async delete(id: string): Promise<{ ok?: number, n?: number }> {
