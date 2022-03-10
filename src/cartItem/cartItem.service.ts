@@ -31,10 +31,14 @@ export class CartItemService {
         return this.cartItemModel.findOne({ _id: id });
     }
 
+    async updateQuantity(id: string, quantity: number) {
+        return this.cartItemModel.updateOne({ _id: id }, { quantity: quantity });
+    }
+
     async delete(id: string): Promise<{ ok?: number, n?: number }> {
-        const category = await this.findOne(id);
-        if (!category)
-            throw new BadRequestException('Product id is not found');
+        const cartItem = await this.findOne(id);
+        if (!cartItem)
+            throw new BadRequestException('Cart item id is not found');
         return await this.cartItemModel.deleteOne({ _id: id });
     }
 

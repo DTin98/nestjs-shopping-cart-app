@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 class CartItem {
   @ApiProperty()
-  cartItemId: string;
+  id: string;
 
   @ApiProperty()
   quantity: number;

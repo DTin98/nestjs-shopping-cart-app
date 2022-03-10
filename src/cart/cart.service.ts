@@ -60,22 +60,25 @@ export class CartService {
         if (!cart)
             throw new BadRequestException("Cart id is not found");
 
-        for (const cartItem of cart.cartItems) {
-            for (const cartItemToUpdate of updateCartDto.cartItems) {
-                if (cartItem._id === cartItemToUpdate.cartItemId) {
-                    await this.cartItemService.
-                }
-            }
+        const cartItemsIds = cart.cartItems.map(e => e._id);
+        const cartItemIdsToUpdate = updateCartDto.cartItems.filter(e => cartItemsIds.includes(e.id));
+
+        for (const cartItem of cartItemIdsToUpdate) {
+            if (cartItem.quantity)
+                await this.cartItemService.updateQuantity(cartItem.id, cartItem.quantity);
+            else
+                await this.cartItemService.delete(cartItem.id);
         }
-        await cart.update({ cartItems: { quantity: 9 } });
+
         return await this.getCart(cart._id)
     }
 
-    async delete(id: string): Promise<{ ok?: number, n?: number }> {
-        const category = await this.findOneByUser(id);
-        if (!category)
-            throw new BadRequestException('Product id is not found');
-        return await this.cartModel.deleteOne({ _id: id });
+    async delete(userId: string, cartItemId: string): Promise<{ ok?: number, n?: number }> {
+        const userCart = await this.findOneByUser(userId);
+        if (!userCart.cartItems.find(e => e._id.toString() === cartItemId.toString()))
+            throw new BadRequestException('Cart item id is not found');
+
+        return await this.cartItemService.delete(cartItemId)
     }
 
 }

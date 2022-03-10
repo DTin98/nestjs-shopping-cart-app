@@ -35,10 +35,8 @@ export class CartController {
         }
     }
 
-
-    @Delete('/:id')
-    @Public()
-    async delete(@Param('id') id: string): Promise<{ ok?: number, n?: number }> {
-        return this.cartService.delete(id);
+    @Delete('/cart-item/:cartItemId')
+    async deleteCartItem(@User() user: IUser, @Param('cartItemId') cartItemId: string): Promise<{ ok?: number, n?: number }> {
+        return this.cartService.delete(user._id, cartItemId);
     }
 }
