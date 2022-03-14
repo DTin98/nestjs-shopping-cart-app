@@ -2,16 +2,16 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { orderSchema } from './schemas/order.schema';
 
-import { CartService } from './order.service';
-import { CartController } from './order.controller';
+import { OrderService } from './order.service';
+import { OrderController } from './order.controller';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Category', schema: orderSchema }]),
+    MongooseModule.forFeature([{ name: 'Order', schema: orderSchema }]),
     PassportModule.register({ defaultStrategy: 'jwt' }),],
-  providers: [CartService],
-  controllers: [CartController],
-  exports: [CartService],
+  providers: [OrderService],
+  controllers: [OrderController],
+  exports: [OrderService],
 })
-export class CartModule { }
+export class OrderModule { }

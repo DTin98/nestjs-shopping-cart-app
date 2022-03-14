@@ -1,8 +1,9 @@
 import { Document } from 'mongoose';
 
-export interface ICartItem extends Document {
-    title: string,
-    metaTitle: string,
-    slug: string,
-    content: string
+export interface IOrderItem extends Document {
+    product: string,
+    order: string,
+    price: string,
+    discount: string,
+    quantity: number,
 }

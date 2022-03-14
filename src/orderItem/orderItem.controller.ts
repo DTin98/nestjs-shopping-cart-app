@@ -3,7 +3,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { Public } from "src/shared/decorators/public.decorator";
 import { OrderItemService } from "./orderItem.service";
 import { CreateCategoryDto } from "./dto/create-product.dto";
-import { ICartItem } from "./interfaces/orderItem.interface";
+import { IOrderItem } from "./interfaces/orderItem.interface";
 
 @Controller('categories')
 @ApiTags('category')
@@ -12,19 +12,19 @@ export class OrderItemController {
 
     @Get('/')
     @Public()
-    async getAll(): Promise<ICartItem[]> {
+    async getAll(): Promise<IOrderItem[]> {
         return this.categoryService.find();
     }
 
     @Get('/:id')
     @Public()
-    async getOne(@Param('id') id: string): Promise<ICartItem> {
+    async getOne(@Param('id') id: string): Promise<IOrderItem> {
         return this.categoryService.findOne(id);
     }
 
     @Post('/')
     @Public()
-    async create(@Body(new ValidationPipe()) createCategoryDto: CreateCategoryDto): Promise<ICartItem> {
+    async create(@Body(new ValidationPipe()) createCategoryDto: CreateCategoryDto): Promise<IOrderItem> {
         return this.categoryService.create(createCategoryDto);
     }
 

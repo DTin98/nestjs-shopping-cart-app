@@ -1,14 +1,12 @@
 import * as mongoose from 'mongoose';
 import { toSlug } from 'src/utils/string.util';
 import { STATUS } from '../enums/status.enum';
-import { ICart } from '../interfaces/order.interface';
+import { IOrder } from '../interfaces/order.interface';
 
 export const orderSchema = new mongoose.Schema(
     {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        orderItem: [{ type: mongoose.Schema.Types.ObjectId, ref: "OrderItem" }],
-        sessionId: { type: String, require: true },
-        token: { type: String, require: true },
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        orderItems: [{ type: mongoose.Schema.Types.ObjectId, ref: "OrderItem" }],
         price: { type: Number, default: 0 },
         promo: { type: String, default: '' },
         discount: { type: Number, default: 0 },
@@ -32,8 +30,3 @@ export const orderSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-
-orderSchema.pre<ICart>("save", function (next) {
-    this.slug = toSlug(this.title)
-    next();
-});

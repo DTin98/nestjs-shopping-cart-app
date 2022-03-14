@@ -1,36 +1,40 @@
 import { Body, Controller, Delete, Get, Param, Post, ValidationPipe } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from "src/shared/decorators/public.decorator";
-import { CartService } from "./order.service";
+import { OrderService } from "./order.service";
 import { CreateCartDto } from "./dto/create-cart.dto";
-import { ICart } from "./interfaces/order.interface";
+import { IOrder } from "./interfaces/order.interface";
+import { User } from "src/shared/decorators/user.decorator";
+import { IUser } from "src/user/interfaces/user.interface";
+import { CartService } from "src/cart/cart.service";
 
-@Controller('categories')
-@ApiTags('category')
-export class CartController {
-    constructor(private readonly categoryService: CartService) { }
+@Controller('orders')
+@ApiTags('order')
+export class OrderController {
+    constructor(private readonly orderService: OrderService,
+        private readonly cartService: CartService) { }
 
     @Get('/')
     @Public()
-    async getAll(): Promise<ICart[]> {
-        return this.categoryService.find();
+    async getAll(): Promise<IOrder[]> {
+        return this.orderService.find();
     }
 
     @Get('/:id')
     @Public()
-    async getOne(@Param('id') id: string): Promise<ICart> {
-        return this.categoryService.findOne(id);
+    async getOne(@Param('id') id: string): Promise<IOrder> {
+        return this.orderService.findOne(id);
     }
 
-    @Post('/')
+    @Post('/cart')
     @Public()
-    async create(@Body(new ValidationPipe()) createCategoryDto: CreateCartDto): Promise<ICart> {
-        return this.categoryService.create(createCategoryDto);
+    async orderCart(@User() user: IUser): Promise<IOrder> {
+        return this.orderService.orderCart(user._id);
     }
 
     @Delete('/:id')
     @Public()
     async delete(@Param('id') id: string): Promise<{ ok?: number, n?: number }> {
-        return this.categoryService.delete(id);
+        return this.orderService.delete(id);
     }
 }
