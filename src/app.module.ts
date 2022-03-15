@@ -16,6 +16,8 @@ import { ProductMetaModule } from './productMeta/productMeta.module';
 import { CategoryModule } from './category/category.module';
 import { CartModule } from './cart/cart.module';
 import { CartItemModule } from './cartItem/cartItem.module';
+import { OrderModule } from './order/order.module';
+import { OrderItemModule } from './orderItem/orderItem.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { CartItemModule } from './cartItem/cartItem.module';
     CategoryModule,
     CartModule,
     CartItemModule,
+    OrderModule,
+    OrderItemModule,
     MongooseModule.forRoot(
       process.env.MONGODB_WRITE_CONNECTION_STRING,
       {

@@ -6,26 +6,26 @@ import { IOrderItem } from './interfaces/orderItem.interface';
 
 @Injectable()
 export class OrderItemService {
-    constructor(@InjectModel('Category') private readonly categoryModel: Model<IOrderItem>) { }
+    constructor(@InjectModel('OrderItem') private readonly orderItemModel: Model<IOrderItem>) { }
 
     async create(createCategoryDto: CreateCategoryDto): Promise<IOrderItem> {
-        const category = new this.categoryModel(createCategoryDto);
+        const category = new this.orderItemModel(createCategoryDto);
         return category.save();
     }
 
     async find(): Promise<IOrderItem[]> {
-        return this.categoryModel.find();
+        return this.orderItemModel.find();
     }
 
     async findOne(id: string): Promise<IOrderItem> {
-        return this.categoryModel.findOne({ _id: id });
+        return this.orderItemModel.findOne({ _id: id });
     }
 
     async delete(id: string): Promise<{ ok?: number, n?: number }> {
         const category = await this.findOne(id);
         if (!category)
             throw new BadRequestException('Product id is not found');
-        return await this.categoryModel.deleteOne({ _id: id });
+        return await this.orderItemModel.deleteOne({ _id: id });
     }
 
 }

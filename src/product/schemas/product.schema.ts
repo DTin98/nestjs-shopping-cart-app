@@ -14,9 +14,9 @@ export const productSchema = new mongoose.Schema(
         summary: { type: String, default: '' },
         content: { type: String, default: '' },
         rating: { type: Number, default: 0 },
-        size: { type: String, required: true, enum: Object.values(SIZE) },
         productMeta: { type: mongoose.Schema.Types.ObjectId, ref: "ProductMeta" },
-        category: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }]
+        category: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
+        priceBySize: [{ type: mongoose.Schema.Types.ObjectId, ref: "PriceBySize" }]
     },
     { timestamps: true }
 );

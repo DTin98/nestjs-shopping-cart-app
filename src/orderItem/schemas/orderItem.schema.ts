@@ -12,3 +12,20 @@ export const orderItemSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+orderItemSchema.virtual('product', {
+    ref: 'Product',
+    localField: 'productId',
+    foreignField: '_id',
+    justOne: true
+});
+
+orderItemSchema.virtual('order', {
+    ref: 'Order',
+    localField: 'orderId',
+    foreignField: '_id',
+    justOne: true
+});
+
+orderItemSchema.set('toObject', { virtuals: true });
+orderItemSchema.set('toJSON', { virtuals: true });

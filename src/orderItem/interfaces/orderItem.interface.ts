@@ -1,9 +1,13 @@
 import { Document } from 'mongoose';
+import { IOrder } from 'src/order/interfaces/order.interface';
+import { IProduct } from 'src/product/interfaces/product.interface';
 
 export interface IOrderItem extends Document {
-    product: string,
-    order: string,
-    price: string,
-    discount: string,
+    productId: string,
+    product?: IProduct,
+    orderId: string,
+    order?: IOrder,
+    price: number,
+    discount?: string,
     quantity: number,
 }

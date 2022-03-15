@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, ValidationPipe } from "@nes
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from "src/shared/decorators/public.decorator";
 import { OrderService } from "./order.service";
-import { CreateCartDto } from "./dto/create-cart.dto";
+import { CreateOrderCartDto } from "./dto/create-order-cart.dto";
 import { IOrder } from "./interfaces/order.interface";
 import { User } from "src/shared/decorators/user.decorator";
 import { IUser } from "src/user/interfaces/user.interface";
@@ -27,9 +27,8 @@ export class OrderController {
     }
 
     @Post('/cart')
-    @Public()
-    async orderCart(@User() user: IUser): Promise<IOrder> {
-        return this.orderService.orderCart(user._id);
+    async orderCart(@User() user: IUser, @Body(new ValidationPipe()) createOrderCartDto: CreateOrderCartDto): Promise<IOrder> {
+        return this.orderService.orderCart(user._id, createOrderCartDto);
     }
 
     @Delete('/:id')

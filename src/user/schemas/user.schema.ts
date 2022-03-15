@@ -3,7 +3,7 @@ import { GENDER } from '../enums/gender.enum';
 import { ROLE } from '../enums/role.enum';
 import { STATUS } from '../enums/status.enum';
 
-export const UserSchema = new mongoose.Schema({
+export const userSchema = new mongoose.Schema({
     email: { type: String, required: true },
     status: { type: String, enum: Object.values(STATUS), default: STATUS.pending },
     avatar: { type: String, default: null },
@@ -23,4 +23,4 @@ export const UserSchema = new mongoose.Schema({
     password: { type: String, required: true },
 });
 
-UserSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ email: 1 }, { unique: true });
