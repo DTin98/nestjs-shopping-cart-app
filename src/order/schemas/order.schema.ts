@@ -17,7 +17,7 @@ export const orderSchema = new mongoose.Schema(
         total: { type: Number, require: true, default: 0 },
         firstName: { type: String, require: true },
         lastName: { type: String, require: true },
-        phone: { type: Number, require: true },
+        phone: { type: String, require: true },
         email: { type: String, require: true },
         address: {
             city: { type: String, default: null },

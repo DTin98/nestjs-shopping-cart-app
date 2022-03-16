@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import * as _ from 'lodash';
 
@@ -12,17 +13,19 @@ export class UserService {
 
     private readonly saltRounds = 10;
 
-    constructor(@InjectModel('User') private readonly userModel: Model<IUser>) { }
+    constructor(
+        @InjectModel('User') private readonly userModel: Model<IUser>,
+    ) { }
 
     async hashPassword(password: string): Promise<string> {
         const salt = await bcrypt.genSalt(this.saltRounds);
         return await bcrypt.hash(password, salt);
     }
 
-    async create(createUserDto: CreateUserDto, roles: string[]): Promise<IUser> {
+    async create(createUserDto: CreateUserDto, roles: string[], options?: mongoose.ConnectionOptions): Promise<IUser> {
         const hash = await this.hashPassword(createUserDto.password);
         const createdUser = new this.userModel(_.assignIn(createUserDto, { password: hash, roles }));
-        return await createdUser.save();
+        return await createdUser.save({ ...options });
     }
 
     async findOne(id: string): Promise<IUser> {

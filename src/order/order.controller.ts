@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, ValidationPipe } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from "src/shared/decorators/public.decorator";
 import { OrderService } from "./order.service";
@@ -28,7 +28,11 @@ export class OrderController {
 
     @Post('/cart')
     async orderCart(@User() user: IUser, @Body(new ValidationPipe()) createOrderCartDto: CreateOrderCartDto): Promise<IOrder> {
-        return this.orderService.orderCart(user._id, createOrderCartDto);
+        try {
+            return this.orderService.orderCart(user._id, createOrderCartDto);
+        } catch (e) {
+            throw new BadRequestException(e.message);
+        }
     }
 
     @Delete('/:id')

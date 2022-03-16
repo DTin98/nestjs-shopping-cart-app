@@ -7,7 +7,6 @@ export interface IOrderItem extends Document {
     product?: IProduct,
     orderId: string,
     order?: IOrder,
-    price: number,
     discount?: string,
     quantity: number,
 }

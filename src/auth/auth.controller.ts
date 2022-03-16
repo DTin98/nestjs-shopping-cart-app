@@ -1,4 +1,4 @@
-import { Controller, Post, Body, ValidationPipe, Get, Query, Patch, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, Get, Query, Patch, UseGuards, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -20,7 +20,12 @@ export class AuthController {
     @Post('/sign-up')
     @Public()
     async signUp(@Body(new ValidationPipe()) createUserDto: CreateUserDto): Promise<IReadableUser> {
-        return this.authService.signUp(createUserDto);
+        try {
+            return this.authService.signUp(createUserDto);
+        }
+        catch (e) {
+            throw new BadRequestException(e.message)
+        }
     }
 
     @Get('/confirm')

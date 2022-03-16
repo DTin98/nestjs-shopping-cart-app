@@ -1,5 +1,9 @@
 import { Document } from 'mongoose';
-
+import { SIZE } from '../enums/size.enum';
+export interface IPriceBySize extends Document {
+    readonly price: number,
+    readonly size: SIZE
+}
 export interface IProduct extends Document {
     readonly title: string;
     slug: string;
@@ -9,5 +13,5 @@ export interface IProduct extends Document {
     readonly summary: string;
     readonly content: string;
     readonly rating: number;
-    readonly size: string;
+    readonly productBySize: IPriceBySize[];
 }

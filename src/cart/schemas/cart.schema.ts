@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { toSlug } from 'src/utils/string.util';
-import { STATUS } from '../enums/status.enum';
+import { CART_STATUS } from '../enums/cart-status.enum';
 import { ICart } from '../interfaces/cart.interface';
 
 export const cartSchema = new mongoose.Schema(
@@ -10,7 +10,7 @@ export const cartSchema = new mongoose.Schema(
         price: { type: Number, default: 0 },
         sessionId: { type: String, require: true },
         token: { type: String, require: true },
-        status: { type: String, default: STATUS.NEW, enum: Object.values(STATUS) },
+        status: { type: String, default: CART_STATUS.NEW, enum: Object.values(CART_STATUS) },
         firstName: { type: String, require: true },
         lastName: { type: String, require: true },
         phone: { type: Number, require: true },

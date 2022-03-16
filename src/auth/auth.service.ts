@@ -21,6 +21,9 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { USER_SENSITIVE_FIELDS } from 'src/user/enums/protected-fields.enum';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { IUserToken } from '../token/interfaces/user-token.interface';
+import { InjectConnection } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
@@ -31,22 +34,33 @@ export class AuthService {
         private readonly userService: UserService,
         private readonly tokenService: TokenService,
         private readonly configService: ConfigService,
-        private readonly mailService: MailService,
+        private mailerService: MailerService,
+        @InjectConnection() private readonly connection: mongoose.Connection
     ) {
         this.clientAppUrl = this.configService.get<string>('FE_APP_URL');
     }
 
     async signUp(createUserDto: CreateUserDto): Promise<IReadableUser> {
-        const user = await this.userService.findByEmail(createUserDto.email);
-        if (user)
-            throw new BadRequestException("Email is existed");
+        const session = await this.connection.startSession();
+        session.startTransaction();
+        try {
+            const user = await this.userService.findByEmail(createUserDto.email);
+            if (user)
+                throw new BadRequestException("Email is existed");
 
-        const createdUser = await this.userService.create(createUserDto, [ROLE.user]);
-        const token = await this.signUser(createdUser, false);
-        const readableUser = createdUser.toObject() as IReadableUser;
-        readableUser.accessToken = token;
-        await this.sendConfirmation(createdUser, token);
-        return _.omit<IReadableUser>(readableUser, Object.values(USER_SENSITIVE_FIELDS)) as IReadableUser;
+            const createdUser = await this.userService.create(createUserDto, [ROLE.user], { session });
+            const token = await this.signUser(createdUser, false);
+            const readableUser = createdUser.toObject() as IReadableUser;
+            readableUser.accessToken = token;
+            await this.sendConfirmation(createdUser, token);
+            await session.commitTransaction();
+            return _.omit<IReadableUser>(readableUser, Object.values(USER_SENSITIVE_FIELDS)) as IReadableUser;
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            session.endSession();
+        }
     }
 
     async signIn({ email, password }: SignInDto): Promise<IReadableUser> {
@@ -109,7 +123,7 @@ export class AuthService {
     async sendConfirmation(user: IUser, token: string) {
         const confirmLink = `${this.clientAppUrl}/auth/confirm?token=${token}`;
 
-        await this.mailService.send({
+        await this.mailerService.sendMail({
             from: this.configService.get<string>('JS_CODE_MAIL'),
             to: user.email,
             subject: 'Verify User',
@@ -146,7 +160,7 @@ export class AuthService {
         const token = await this.signUser(user);
         const forgotLink = `${this.clientAppUrl}/auth/forgotPassword?token=${token}`;
 
-        await this.mailService.send({
+        await this.mailerService.sendMail({
             from: this.configService.get<string>('JS_CODE_MAIL'),
             to: user.email,
             subject: 'Forgot Password',

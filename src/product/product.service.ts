@@ -10,8 +10,13 @@ export class ProductService {
     constructor(@InjectModel('Product') private readonly productModel: Model<IProduct>) { }
 
     async create(createProductDto: CreateProductDto): Promise<IProduct> {
-        const product = new this.productModel(createProductDto);
-        return product.save();
+        //find product by title if exist then throw error
+        const product = await this.productModel.findOne({ title: createProductDto.title });
+        if (product)
+            throw new BadRequestException('Product title is already exist');
+
+        const newProduct = new this.productModel(createProductDto);
+        return newProduct.save();
     }
 
     async find(): Promise<IProduct[]> {

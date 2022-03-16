@@ -25,7 +25,6 @@ import { OrderItemModule } from './orderItem/orderItem.module';
     AuthModule,
     configModule,
     TokenModule,
-    MailModule,
     ProductModule,
     ProductMetaModule,
     CategoryModule,

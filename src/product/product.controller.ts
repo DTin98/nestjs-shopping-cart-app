@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, ValidationPipe } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Public } from "src/shared/decorators/public.decorator";
+import { Roles } from "src/shared/decorators/role.decorator";
+import { ROLE } from "src/user/enums/role.enum";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { IProduct } from "./interfaces/product.interface";
 import { ProductService } from "./product.service";
@@ -23,13 +25,13 @@ export class ProductController {
     }
 
     @Post('/')
-    @Public()
+    @Roles(ROLE.admin)
     async create(@Body(new ValidationPipe()) createProductDto: CreateProductDto): Promise<IProduct> {
         return this.productService.create(createProductDto);
     }
 
     @Delete('/:id')
-    @Public()
+    @Roles(ROLE.admin)
     async delete(@Param('id') id: string): Promise<{ ok?: number, n?: number }> {
         return this.productService.delete(id);
     }

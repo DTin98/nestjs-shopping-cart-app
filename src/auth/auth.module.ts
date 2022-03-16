@@ -8,6 +8,7 @@ import { PassportModule } from '@nestjs/passport';
 import { UserModule } from 'src/user/user.module';
 import { TokenModule } from 'src/token/token.module';
 import { MailModule } from 'src/mail/mail.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -19,7 +20,19 @@ import { MailModule } from 'src/mail/mail.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
-    MailModule,
+    MailerModule.forRoot({
+      transport: {
+        service: "gmail",
+        host: "smtp.gmail.com",
+        auth: {
+          user: process.env.SYSTEM_EMAIL_USERNAME,
+          pass: process.env.SYSTEM_EMAIL_PASSWORD,
+        },
+        tls: {
+          rejectUnauthorized: false
+        }
+      },
+    }),
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],

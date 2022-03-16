@@ -2,6 +2,17 @@ import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { SIZE } from '../enums/size.enum';
 
+export class PriceBySize {
+  @IsNotEmpty()
+  @ApiProperty()
+  price: number;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  @IsEnum(SIZE)
+  size: SIZE
+}
+
 export class CreateProductDto {
   @IsNotEmpty()
   @ApiProperty()
@@ -23,7 +34,6 @@ export class CreateProductDto {
   content: string;
 
   @IsNotEmpty()
-  @IsEnum(SIZE)
-  @ApiProperty()
-  size: string;
+  @ApiProperty({ type: [PriceBySize] })
+  priceBySize: PriceBySize[];
 }
