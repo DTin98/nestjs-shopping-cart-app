@@ -44,15 +44,16 @@ export class AuthService {
         const session = await this.connection.startSession();
         session.startTransaction();
         try {
-            const user = await this.userService.findByEmail(createUserDto.email);
+            const user = await this.userService.findByPhone(createUserDto.phone);
             if (user)
                 throw new BadRequestException("Email is existed");
 
-            const createdUser = await this.userService.create(createUserDto, [ROLE.user], { session });
+            const createdUser = await this.userService.create(createUserDto, [ROLE.user], STATUS.active, { session });
             const token = await this.signUser(createdUser, false);
             const readableUser = createdUser.toObject() as IReadableUser;
             readableUser.accessToken = token;
-            await this.sendConfirmation(createdUser, token);
+            /** NO SEND EMAIL CONFIRM */
+            // await this.sendConfirmation(createdUser, token);
             await session.commitTransaction();
             return _.omit<IReadableUser>(readableUser, Object.values(USER_SENSITIVE_FIELDS)) as IReadableUser;
         } catch (error) {
@@ -63,8 +64,8 @@ export class AuthService {
         }
     }
 
-    async signIn({ email, password }: SignInDto): Promise<IReadableUser> {
-        const user = await this.userService.findByEmail(email);
+    async signIn({ phone, password }: SignInDto): Promise<IReadableUser> {
+        const user = await this.userService.findByPhone(phone);
 
         if (user && (await bcrypt.compare(password, user.password))) {
             const token = await this.signUser(user);
@@ -153,6 +154,9 @@ export class AuthService {
     }
 
     async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
+        if (!forgotPasswordDto.email) {
+            throw new BadRequestException('User have not email');
+        }
         const user = await this.userService.findByEmail(forgotPasswordDto.email);
         if (!user) {
             throw new BadRequestException('Invalid email');

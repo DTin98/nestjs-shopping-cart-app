@@ -18,6 +18,7 @@ import { CartModule } from './cart/cart.module';
 import { CartItemModule } from './cartItem/cartItem.module';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './orderItem/orderItem.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { OrderItemModule } from './orderItem/orderItem.module';
       },
     ),
   ],
+  controllers: [AppController],
   providers: [
     {
       provide: APP_GUARD,
@@ -48,7 +50,7 @@ import { OrderItemModule } from './orderItem/orderItem.module';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
-    },
+    }
   ],
 })
 export class AppModule { }

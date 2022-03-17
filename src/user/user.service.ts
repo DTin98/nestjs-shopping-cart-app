@@ -7,6 +7,7 @@ import * as _ from 'lodash';
 import { IUser } from './interfaces/user.interface';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
+import { STATUS } from './enums/status.enum';
 
 @Injectable()
 export class UserService {
@@ -22,9 +23,9 @@ export class UserService {
         return await bcrypt.hash(password, salt);
     }
 
-    async create(createUserDto: CreateUserDto, roles: string[], options?: mongoose.ConnectionOptions): Promise<IUser> {
+    async create(createUserDto: CreateUserDto, roles: string[], status: STATUS, options?: mongoose.ConnectionOptions): Promise<IUser> {
         const hash = await this.hashPassword(createUserDto.password);
-        const createdUser = new this.userModel(_.assignIn(createUserDto, { password: hash, roles }));
+        const createdUser = new this.userModel(_.assignIn(createUserDto, { password: hash, roles, status }));
         return await createdUser.save({ ...options });
     }
 
@@ -34,6 +35,10 @@ export class UserService {
 
     async findByEmail(email: string): Promise<IUser> {
         return await this.userModel.findOne({ email }).exec();
+    }
+
+    async findByPhone(phone: string): Promise<IUser> {
+        return await this.userModel.findOne({ phone }).exec();
     }
 
     async update(id: string, payload: Partial<IUser>) {

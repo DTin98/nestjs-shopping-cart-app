@@ -6,10 +6,13 @@ import { GENDER } from '../enums/gender.enum';
 export class CreateUserDto {
     @ApiProperty()
     @IsEmail()
+    @IsOptional()
     readonly email: string;
 
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
     readonly avatar: string;
-    readonly avatarId: string;
 
     @ApiProperty()
     @IsString()
@@ -22,10 +25,11 @@ export class CreateUserDto {
     readonly lastName: string;
 
     @ApiProperty()
+    @ApiPropertyOptional()
     @IsString()
     @IsNotEmpty()
     @IsEnum(GENDER)
-    readonly gender: string;
+    readonly gender: GENDER;
 
     @IsOptional()
     @ApiPropertyOptional()
@@ -36,14 +40,12 @@ export class CreateUserDto {
     @IsOptional()
     readonly profession: string;
 
-    readonly searchField: string;
 
     @ApiProperty()
+    @Matches(/^[0-9]+$/, { message: 'Phone number is incorrect format' })
     @IsString()
-    @IsOptional()
     readonly phone: string;
 
-    readonly roles: string[];
 
     @IsString()
     @IsNotEmpty()
@@ -53,4 +55,7 @@ export class CreateUserDto {
     )
     @ApiProperty()
     readonly password: string;
+
+    readonly searchField: string;
+    readonly roles: string[];
 }

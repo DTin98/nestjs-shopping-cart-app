@@ -8,9 +8,21 @@ export class PriceBySize {
   price: number;
 
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ enum: SIZE, example: SIZE.oneKilograms })
   @IsEnum(SIZE)
   size: SIZE
+}
+
+export class ProductMeta {
+  @IsNotEmpty()
+  @ApiProperty()
+  productId: string;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  moreInfo: string
 }
 
 export class CreateProductDto {
@@ -36,4 +48,7 @@ export class CreateProductDto {
   @IsNotEmpty()
   @ApiProperty({ type: [PriceBySize] })
   priceBySize: PriceBySize[];
+
+  @ApiProperty({ type: ProductMeta })
+  productMeta: ProductMeta;
 }

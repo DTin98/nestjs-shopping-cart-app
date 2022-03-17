@@ -4,7 +4,7 @@ import { ROLE } from '../enums/role.enum';
 import { STATUS } from '../enums/status.enum';
 
 export const userSchema = new mongoose.Schema({
-    email: { type: String, required: true },
+    email: { type: String },
     status: { type: String, enum: Object.values(STATUS), default: STATUS.pending },
     avatar: { type: String, default: null },
     avatarId: { type: String, default: null },
@@ -18,9 +18,9 @@ export const userSchema = new mongoose.Schema({
         addressLine2: { type: String, default: null },
     },
     profession: { type: String, default: null },
-    phone: { type: String, default: null },
+    phone: { type: String, default: null, required: true },
     roles: { type: [String], required: true, enum: Object.values(ROLE) },
     password: { type: String, required: true },
 });
 
-userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ phone: 1 }, { unique: true });
