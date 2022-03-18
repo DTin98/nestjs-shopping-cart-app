@@ -3,6 +3,8 @@ import { toSlug } from 'src/utils/string.util';
 import { SIZE } from '../enums/size.enum';
 import { IProduct } from '../interfaces/product.interface';
 
+export const PRODUCT = 'Product';
+
 export const productSchema = new mongoose.Schema(
     {
         title: { type: String, required: true, unique: true },
@@ -14,7 +16,7 @@ export const productSchema = new mongoose.Schema(
         summary: { type: String, default: '' },
         content: { type: String, default: '' },
         rating: { type: Number, default: 0 },
-        productMeta: { type: mongoose.Schema.Types.ObjectId, ref: "ProductMeta" },
+        productMetaId: { type: mongoose.Schema.Types.ObjectId, ref: "ProductMeta" },
         category: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
         priceBySize: [{
             price: { type: Number, default: 0, required: true },
@@ -25,6 +27,16 @@ export const productSchema = new mongoose.Schema(
 );
 
 productSchema.pre<IProduct>("save", function (next) {
-    this.slug = toSlug(this.title)
+    this.slug = toSlug(this.title);
     next();
 });
+
+productSchema.virtual('productMeta', {
+    ref: 'productMeta',
+    localField: 'productMetaId',
+    foreignField: '_id',
+    justOne: true
+});
+
+productSchema.set('toObject', { virtuals: true });
+productSchema.set('toJSON', { virtuals: true });

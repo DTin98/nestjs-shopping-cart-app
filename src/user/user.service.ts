@@ -8,11 +8,12 @@ import { IUser } from './interfaces/user.interface';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { STATUS } from './enums/status.enum';
+import { SALT_ROUNDS } from './constant';
 
 @Injectable()
 export class UserService {
 
-    private readonly saltRounds = 10;
+    private readonly saltRounds = SALT_ROUNDS;
 
     constructor(
         @InjectModel('User') private readonly userModel: Model<IUser>,

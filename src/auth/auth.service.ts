@@ -44,9 +44,16 @@ export class AuthService {
         const session = await this.connection.startSession();
         session.startTransaction();
         try {
-            const user = await this.userService.findByPhone(createUserDto.phone);
+            let user;
+            user = await this.userService.findByPhone(createUserDto.phone);
             if (user)
-                throw new BadRequestException("Email is existed");
+                throw new BadRequestException("Phone is existed");
+
+            if (createUserDto.email) {
+                user = await this.userService.findByEmail(createUserDto.email);
+                if (user)
+                    throw new BadRequestException("Email is existed");
+            }
 
             const createdUser = await this.userService.create(createUserDto, [ROLE.user], STATUS.active, { session });
             const token = await this.signUser(createdUser, false);

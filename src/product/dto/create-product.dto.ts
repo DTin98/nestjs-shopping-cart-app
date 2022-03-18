@@ -14,10 +14,6 @@ export class PriceBySize {
 }
 
 export class ProductMeta {
-  @IsNotEmpty()
-  @ApiProperty()
-  productId: string;
-
   @ApiProperty()
   description: string;
 

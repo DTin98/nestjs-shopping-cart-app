@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 import { Schema } from 'mongoose';
-import { TEXT_CONTENT_TYPE } from '../enums/textContentType.enum';
+
+export const PRODUCT_META = 'ProductMeta';
 
 export const ProductMetaSchema = new mongoose.Schema({
     productId: { type: Schema.Types.ObjectId, ref: 'Product' },

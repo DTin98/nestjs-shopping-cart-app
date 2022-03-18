@@ -5,8 +5,8 @@ import { GENDER } from '../enums/gender.enum';
 
 export class CreateUserDto {
     @ApiProperty()
-    @IsEmail()
     @IsOptional()
+    @IsEmail()
     readonly email: string;
 
     @ApiProperty()
