@@ -1,6 +1,8 @@
 import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { SIZE } from '../enums/size.enum';
+import { IPriceBySize } from '../interfaces/product.interface';
+import { IProductMeta } from 'src/productMeta/interfaces/productMeta.interface';
 
 export class PriceBySize {
   @IsNotEmpty()
@@ -10,7 +12,7 @@ export class PriceBySize {
   @IsNotEmpty()
   @ApiProperty({ enum: SIZE, example: SIZE.oneKilograms })
   @IsEnum(SIZE)
-  size: SIZE
+  size: SIZE;
 }
 
 export class ProductMeta {
@@ -18,7 +20,7 @@ export class ProductMeta {
   description: string;
 
   @ApiProperty()
-  moreInfo: string
+  moreInfo: string;
 }
 
 export class CreateProductDto {
@@ -43,8 +45,8 @@ export class CreateProductDto {
 
   @IsNotEmpty()
   @ApiProperty({ type: [PriceBySize] })
-  priceBySize: PriceBySize[];
+  priceBySize: IPriceBySize[];
 
   @ApiProperty({ type: ProductMeta })
-  productMeta: ProductMeta;
+  productMeta: IProductMeta;
 }

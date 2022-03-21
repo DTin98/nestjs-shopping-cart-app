@@ -9,9 +9,10 @@ import { PassportModule } from '@nestjs/passport';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Category', schema: categorySchema }]),
-    PassportModule.register({ defaultStrategy: 'jwt' }),],
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
   providers: [CategoryService],
   controllers: [CategoryController],
   exports: [CategoryService],
 })
-export class CategoryModule { }
+export class CategoryModule {}

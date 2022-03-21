@@ -6,12 +6,15 @@ import { CartService } from './cart.service';
 import { CartController } from './cart.controller';
 import { PassportModule } from '@nestjs/passport';
 import { CartItemModule } from 'src/cartItem/cartItem.module';
+import { ProductModule } from 'src/product/product.module';
 
 @Module({
   imports: [
+    ProductModule,
     CartItemModule,
     MongooseModule.forFeature([{ name: 'Cart', schema: cartSchema }]),
-    PassportModule.register({ defaultStrategy: 'jwt' }),],
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
   providers: [CartService],
   controllers: [CartController],
   exports: [CartService],

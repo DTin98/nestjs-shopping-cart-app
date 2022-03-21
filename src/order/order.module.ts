@@ -11,15 +11,18 @@ import { CartService } from 'src/cart/cart.service';
 import { CartItemService } from 'src/cartItem/cartItem.service';
 import { cartItemSchema } from 'src/cartItem/schemas/cartItem.schema';
 import { userSchema } from 'src/user/schemas/user.schema';
+import { ProductModule } from 'src/product/product.module';
 
 @Module({
   imports: [
+    ProductModule,
     MongooseModule.forFeature([{ name: 'User', schema: userSchema }]),
     MongooseModule.forFeature([{ name: 'Order', schema: orderSchema }]),
     MongooseModule.forFeature([{ name: 'Cart', schema: cartSchema }]),
     MongooseModule.forFeature([{ name: 'CartItem', schema: cartItemSchema }]),
     MongooseModule.forFeature([{ name: 'OrderItem', schema: orderItemSchema }]),
-    PassportModule.register({ defaultStrategy: 'jwt' }),],
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
   providers: [OrderService, CartService, CartItemService],
   controllers: [OrderController],
   exports: [OrderService],

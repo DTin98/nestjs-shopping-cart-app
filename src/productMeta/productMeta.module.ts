@@ -8,10 +8,13 @@ import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'ProductMeta', schema: ProductMetaSchema }]),
-    PassportModule.register({ defaultStrategy: 'jwt' }),],
+    MongooseModule.forFeature([
+      { name: 'ProductMeta', schema: ProductMetaSchema },
+    ]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
   providers: [ProductMetaService],
   controllers: [ProductMetaController],
   exports: [ProductMetaService],
 })
-export class ProductMetaModule { }
+export class ProductMetaModule {}

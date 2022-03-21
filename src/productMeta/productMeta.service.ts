@@ -4,7 +4,4 @@ import * as bcrypt from 'bcrypt';
 import * as _ from 'lodash';
 
 @Injectable()
-export class ProductMetaService {
-
-
-}
+export class ProductMetaService {}

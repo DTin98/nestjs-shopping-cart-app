@@ -5,6 +5,5 @@ import { ProductMetaService } from './productMeta.service';
 
 @Controller('product-meta')
 export class ProductMetaController {
-    constructor(private readonly productService: ProductMetaService) { }
-
+  constructor(private readonly productService: ProductMetaService) {}
 }

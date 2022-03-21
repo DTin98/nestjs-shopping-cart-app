@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, MethodNotAllowedException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  MethodNotAllowedException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as _ from 'lodash';
@@ -27,158 +32,180 @@ import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
-    private readonly clientAppUrl: string;
+  private readonly clientAppUrl: string;
 
-    constructor(
-        private readonly jwtService: JwtService,
-        private readonly userService: UserService,
-        private readonly tokenService: TokenService,
-        private readonly configService: ConfigService,
-        private mailerService: MailerService,
-        @InjectConnection() private readonly connection: mongoose.Connection
-    ) {
-        this.clientAppUrl = this.configService.get<string>('FE_APP_URL');
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService,
+    private readonly tokenService: TokenService,
+    private readonly configService: ConfigService,
+    private mailerService: MailerService,
+    @InjectConnection() private readonly connection: mongoose.Connection,
+  ) {
+    this.clientAppUrl = this.configService.get<string>('FE_APP_URL');
+  }
+
+  async signUp(createUserDto: CreateUserDto): Promise<IReadableUser> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    try {
+      let user;
+      user = await this.userService.findByPhone(createUserDto.phone);
+      if (user) throw new BadRequestException('Phone is existed');
+
+      if (createUserDto.email) {
+        user = await this.userService.findByEmail(createUserDto.email);
+        if (user) throw new BadRequestException('Email is existed');
+      }
+
+      const createdUser = await this.userService.create(
+        createUserDto,
+        [ROLE.user],
+        STATUS.active,
+        { session },
+      );
+      const token = await this.signUser(createdUser, false);
+      const readableUser = createdUser.toObject() as IReadableUser;
+      readableUser.accessToken = token;
+      /** NO SEND EMAIL CONFIRM */
+      // await this.sendConfirmation(createdUser, token);
+      await session.commitTransaction();
+      return _.omit<IReadableUser>(
+        readableUser,
+        Object.values(USER_SENSITIVE_FIELDS),
+      ) as IReadableUser;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
     }
+  }
 
-    async signUp(createUserDto: CreateUserDto): Promise<IReadableUser> {
-        const session = await this.connection.startSession();
-        session.startTransaction();
-        try {
-            let user;
-            user = await this.userService.findByPhone(createUserDto.phone);
-            if (user)
-                throw new BadRequestException("Phone is existed");
+  async signIn({ phone, password }: SignInDto): Promise<IReadableUser> {
+    const user = await this.userService.findByPhone(phone);
 
-            if (createUserDto.email) {
-                user = await this.userService.findByEmail(createUserDto.email);
-                if (user)
-                    throw new BadRequestException("Email is existed");
-            }
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const token = await this.signUser(user);
+      const readableUser = user.toObject() as IReadableUser;
+      readableUser.accessToken = token;
 
-            const createdUser = await this.userService.create(createUserDto, [ROLE.user], STATUS.active, { session });
-            const token = await this.signUser(createdUser, false);
-            const readableUser = createdUser.toObject() as IReadableUser;
-            readableUser.accessToken = token;
-            /** NO SEND EMAIL CONFIRM */
-            // await this.sendConfirmation(createdUser, token);
-            await session.commitTransaction();
-            return _.omit<IReadableUser>(readableUser, Object.values(USER_SENSITIVE_FIELDS)) as IReadableUser;
-        } catch (error) {
-            await session.abortTransaction();
-            throw error;
-        } finally {
-            session.endSession();
-        }
+      return _.omit<IReadableUser>(
+        readableUser,
+        Object.values(USER_SENSITIVE_FIELDS),
+      ) as IReadableUser;
     }
+    throw new BadRequestException('Invalid credentials');
+  }
 
-    async signIn({ phone, password }: SignInDto): Promise<IReadableUser> {
-        const user = await this.userService.findByPhone(phone);
-
-        if (user && (await bcrypt.compare(password, user.password))) {
-            const token = await this.signUser(user);
-            const readableUser = user.toObject() as IReadableUser;
-            readableUser.accessToken = token;
-
-            return _.omit<IReadableUser>(readableUser, Object.values(USER_SENSITIVE_FIELDS)) as IReadableUser;
-        }
-        throw new BadRequestException('Invalid credentials');
+  async signUser(
+    user: IUser,
+    withStatusCheck: boolean = true,
+  ): Promise<string> {
+    if (withStatusCheck && user.status !== STATUS.active) {
+      throw new BadRequestException('User has not active yet');
     }
+    const tokenPayload: ITokenPayload = {
+      _id: user._id,
+      status: user.status,
+      roles: user.roles,
+    };
+    const token = await this.generateToken(tokenPayload);
+    const expireAt = moment()
+      .add(1, 'day')
+      .toISOString();
 
-    async signUser(user: IUser, withStatusCheck: boolean = true): Promise<string> {
-        if (withStatusCheck && (user.status !== STATUS.active)) {
-            throw new BadRequestException("User has not active yet");
-        }
-        const tokenPayload: ITokenPayload = {
-            _id: user._id,
-            status: user.status,
-            roles: user.roles,
-        };
-        const token = await this.generateToken(tokenPayload);
-        const expireAt = moment()
-            .add(1, 'day')
-            .toISOString();
+    await this.saveToken({
+      token,
+      expireAt,
+      uId: user._id,
+    });
 
-        await this.saveToken({
-            token,
-            expireAt,
-            uId: user._id,
-        });
+    return token;
+  }
 
-        return token;
+  async changePassword(
+    userId: string,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<boolean> {
+    const password = await this.userService.hashPassword(
+      changePasswordDto.password,
+    );
+
+    await this.userService.update(userId, { password });
+    await this.tokenService.deleteAll(userId);
+    return true;
+  }
+
+  async confirm(token: string): Promise<IUser> {
+    const data = await this.verifyToken(token);
+    const user = await this.userService.findOne(data._id);
+
+    await this.tokenService.delete(data._id, token);
+
+    if (user && user.status === STATUS.pending) {
+      user.status = STATUS.active;
+      return user.save();
     }
+    throw new BadRequestException('Confirmation error');
+  }
 
-    async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<boolean> {
-        const password = await this.userService.hashPassword(changePasswordDto.password);
+  async sendConfirmation(user: IUser, token: string) {
+    const confirmLink = `${this.clientAppUrl}/auth/confirm?token=${token}`;
 
-        await this.userService.update(userId, { password });
-        await this.tokenService.deleteAll(userId);
-        return true;
-    }
-
-    async confirm(token: string): Promise<IUser> {
-        const data = await this.verifyToken(token);
-        const user = await this.userService.findOne(data._id);
-
-        await this.tokenService.delete(data._id, token);
-
-        if (user && user.status === STATUS.pending) {
-            user.status = STATUS.active;
-            return user.save();
-        }
-        throw new BadRequestException('Confirmation error');
-    }
-
-    async sendConfirmation(user: IUser, token: string) {
-        const confirmLink = `${this.clientAppUrl}/auth/confirm?token=${token}`;
-
-        await this.mailerService.sendMail({
-            from: this.configService.get<string>('JS_CODE_MAIL'),
-            to: user.email,
-            subject: 'Verify User',
-            html: `
+    await this.mailerService.sendMail({
+      from: this.configService.get<string>('JS_CODE_MAIL'),
+      to: user.email,
+      subject: 'Verify User',
+      html: `
                 <h3>Hello ${user.firstName}!</h3>
                 <p>Please use this <a href="${confirmLink}">link</a> to confirm your account.</p>
             `,
-        });
+    });
+  }
+
+  private async generateToken(
+    data: ITokenPayload,
+    options?: SignOptions,
+  ): Promise<string> {
+    return this.jwtService.sign(data, options);
+  }
+
+  private async verifyToken(token): Promise<any> {
+    const data = this.jwtService.verify(token) as ITokenPayload;
+    const tokenExists = await this.tokenService.exists(data._id, token);
+
+    if (tokenExists) {
+      return data;
     }
+    throw new UnauthorizedException();
+  }
 
-    private async generateToken(data: ITokenPayload, options?: SignOptions): Promise<string> {
-        return this.jwtService.sign(data, options);
+  private saveToken(
+    createUserTokenDto: CreateUserTokenDto,
+  ): Promise<IUserToken> {
+    return this.tokenService.create(createUserTokenDto);
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
+    if (!forgotPasswordDto.email) {
+      throw new BadRequestException('User have not email');
     }
-
-    private async verifyToken(token): Promise<any> {
-        const data = this.jwtService.verify(token) as ITokenPayload;
-        const tokenExists = await this.tokenService.exists(data._id, token);
-
-        if (tokenExists) {
-            return data;
-        }
-        throw new UnauthorizedException();
+    const user = await this.userService.findByEmail(forgotPasswordDto.email);
+    if (!user) {
+      throw new BadRequestException('Invalid email');
     }
+    const token = await this.signUser(user);
+    const forgotLink = `${this.clientAppUrl}/auth/forgotPassword?token=${token}`;
 
-    private saveToken(createUserTokenDto: CreateUserTokenDto): Promise<IUserToken> {
-        return this.tokenService.create(createUserTokenDto);
-    }
-
-    async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
-        if (!forgotPasswordDto.email) {
-            throw new BadRequestException('User have not email');
-        }
-        const user = await this.userService.findByEmail(forgotPasswordDto.email);
-        if (!user) {
-            throw new BadRequestException('Invalid email');
-        }
-        const token = await this.signUser(user);
-        const forgotLink = `${this.clientAppUrl}/auth/forgotPassword?token=${token}`;
-
-        await this.mailerService.sendMail({
-            from: this.configService.get<string>('JS_CODE_MAIL'),
-            to: user.email,
-            subject: 'Forgot Password',
-            html: `
+    await this.mailerService.sendMail({
+      from: this.configService.get<string>('JS_CODE_MAIL'),
+      to: user.email,
+      subject: 'Forgot Password',
+      html: `
                 <h3>Hello ${user.firstName}!</h3>
                 <p>Please use this <a href="${forgotLink}">link</a> to reset your password.</p>
             `,
-        });
-    }
+    });
+  }
 }

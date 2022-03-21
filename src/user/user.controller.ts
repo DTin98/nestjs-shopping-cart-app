@@ -8,20 +8,29 @@ import * as _ from 'lodash';
 
 @Controller('users')
 export class UserController {
-    constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
-    @Get('/me')
-    async getMe(@User() user: IUser): Promise<IReadableUser> {
-        const _user = await this.userService.findOne(user._id);
-        const readableUser = _user.toObject() as IReadableUser;
-        return _.omit<any>(readableUser, Object.values(USER_SENSITIVE_FIELDS)) as IReadableUser;
-    }
+  @Get('/me')
+  async getMe(@User() user: IUser): Promise<IReadableUser> {
+    const _user = await this.userService.findOne(user._id);
+    const readableUser = _user.toObject() as IReadableUser;
+    return _.omit<any>(
+      readableUser,
+      Object.values(USER_SENSITIVE_FIELDS),
+    ) as IReadableUser;
+  }
 
-    @Patch('/me')
-    async updateMe(@User() user: IUser, @Body() payload: Partial<IUser>): Promise<IReadableUser> {
-        await this.userService.update(user._id, payload);
-        const _user = await this.userService.findOne(user._id);
-        const readableUser = _user.toObject() as IReadableUser;
-        return _.omit<any>(readableUser, Object.values(USER_SENSITIVE_FIELDS)) as IReadableUser;
-    }
+  @Patch('/me')
+  async updateMe(
+    @User() user: IUser,
+    @Body() payload: Partial<IUser>,
+  ): Promise<IReadableUser> {
+    await this.userService.update(user._id, payload);
+    const _user = await this.userService.findOne(user._id);
+    const readableUser = _user.toObject() as IReadableUser;
+    return _.omit<any>(
+      readableUser,
+      Object.values(USER_SENSITIVE_FIELDS),
+    ) as IReadableUser;
+  }
 }

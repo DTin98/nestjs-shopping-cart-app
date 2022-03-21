@@ -22,19 +22,19 @@ import { MailerModule } from '@nestjs-modules/mailer';
     }),
     MailerModule.forRoot({
       transport: {
-        service: "gmail",
-        host: "smtp.gmail.com",
+        service: 'gmail',
+        host: 'smtp.gmail.com',
         auth: {
           user: process.env.SYSTEM_EMAIL_USERNAME,
           pass: process.env.SYSTEM_EMAIL_PASSWORD,
         },
         tls: {
-          rejectUnauthorized: false
-        }
+          rejectUnauthorized: false,
+        },
       },
     }),
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
 })
-export class AuthModule { }
+export class AuthModule {}

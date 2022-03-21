@@ -19,6 +19,7 @@ import { CartItemModule } from './cartItem/cartItem.module';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './orderItem/orderItem.module';
 import { AppController } from './app.controller';
+import { ConfigurationModule } from './configuration/configuration.module';
 
 @Module({
   imports: [
@@ -33,13 +34,11 @@ import { AppController } from './app.controller';
     CartItemModule,
     OrderModule,
     OrderItemModule,
-    MongooseModule.forRoot(
-      process.env.MONGODB_WRITE_CONNECTION_STRING,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      },
-    ),
+    ConfigurationModule,
+    MongooseModule.forRoot(process.env.MONGODB_WRITE_CONNECTION_STRING, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }),
   ],
   controllers: [AppController],
   providers: [
@@ -50,7 +49,7 @@ import { AppController } from './app.controller';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
-    }
+    },
   ],
 })
-export class AppModule { }
+export class AppModule {}

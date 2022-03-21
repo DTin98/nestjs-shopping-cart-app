@@ -1,4 +1,14 @@
-import { Controller, Post, Body, ValidationPipe, Get, Query, Patch, UseGuards, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  ValidationPipe,
+  Get,
+  Query,
+  Patch,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -15,43 +25,50 @@ import { Public } from 'src/shared/decorators/public.decorator';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
-    @Post('/sign-up')
-    @Public()
-    async signUp(@Body(new ValidationPipe()) createUserDto: CreateUserDto): Promise<IReadableUser> {
-        try {
-            return this.authService.signUp(createUserDto);
-        }
-        catch (e) {
-            throw new BadRequestException(e.message)
-        }
+  @Post('/sign-up')
+  @Public()
+  async signUp(
+    @Body(new ValidationPipe()) createUserDto: CreateUserDto,
+  ): Promise<IReadableUser> {
+    try {
+      return this.authService.signUp(createUserDto);
+    } catch (e) {
+      throw new BadRequestException(e.message);
     }
+  }
 
-    @Get('/confirm')
-    @Public()
-    async confirm(@Query(new ValidationPipe()) query: ConfirmAccountDto): Promise<boolean> {
-        await this.authService.confirm(query.token);
-        return true;
-    }
+  @Get('/confirm')
+  @Public()
+  async confirm(
+    @Query(new ValidationPipe()) query: ConfirmAccountDto,
+  ): Promise<boolean> {
+    await this.authService.confirm(query.token);
+    return true;
+  }
 
-    @Post('/sign-in')
-    @Public()
-    async signIn(@Body(new ValidationPipe()) signInDto: SignInDto): Promise<IReadableUser> {
-        return await this.authService.signIn(signInDto);
-    }
+  @Post('/sign-in')
+  @Public()
+  async signIn(
+    @Body(new ValidationPipe()) signInDto: SignInDto,
+  ): Promise<IReadableUser> {
+    return await this.authService.signIn(signInDto);
+  }
 
-    @Post('/forgot-password')
-    @Public()
-    async forgotPassword(@Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto): Promise<void> {
-        return this.authService.forgotPassword(forgotPasswordDto);
-    }
+  @Post('/forgot-password')
+  @Public()
+  async forgotPassword(
+    @Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<void> {
+    return this.authService.forgotPassword(forgotPasswordDto);
+  }
 
-    @Patch('/change-password')
-    async changePassword(
-        @User() user: IUser,
-        @Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto,
-    ): Promise<boolean> {
-        return this.authService.changePassword(user._id, changePasswordDto);
-    }
+  @Patch('/change-password')
+  async changePassword(
+    @User() user: IUser,
+    @Body(new ValidationPipe()) changePasswordDto: ChangePasswordDto,
+  ): Promise<boolean> {
+    return this.authService.changePassword(user._id, changePasswordDto);
+  }
 }

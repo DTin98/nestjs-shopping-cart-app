@@ -8,8 +8,9 @@ import { PassportModule } from '@nestjs/passport';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'CartItem', schema: cartItemSchema }]),
-    PassportModule.register({ defaultStrategy: 'jwt' }),],
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
   providers: [CartItemService],
   exports: [CartItemService],
 })
-export class CartItemModule { }
+export class CartItemModule {}
