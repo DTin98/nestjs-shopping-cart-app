@@ -10,9 +10,10 @@ async function bootstrap() {
 
   const options = new DocumentBuilder()
     .addBearerAuth()
-    .setTitle('NestJS ComChayRop App')
-    .setDescription('NestJS ComChayRop Endpoint')
+    .setTitle('NestJS Shopping Cart App')
+    .setDescription('NestJS Shopping Cart Endpoint')
     .setVersion('1.0')
+    .setBasePath('api')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
