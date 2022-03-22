@@ -58,6 +58,7 @@ export class OrderService {
       // create order
       const order = new this.orderModel(
         {
+          userId: userId,
           tax: TAX_DEFAULT,
           subTotal: SUB_TOTAL_DEFAULT,
           total: TOTAL_DEFAULT,
@@ -126,6 +127,9 @@ export class OrderService {
     return await this.findOne(id);
   }
 
+  async findByUser(userId: string): Promise<IOrder[]> {
+    return this.orderModel.find({ userId: userId }).populate('orderItems', null, null, { populate: { path: 'product' } });
+  }
 
   async delete(id: string): Promise<{ ok?: number; n?: number }> {
     const category = await this.findOne(id);

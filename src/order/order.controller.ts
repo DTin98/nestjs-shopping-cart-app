@@ -29,13 +29,18 @@ export class OrderController {
   ) { }
 
   @Get('/')
-  @Public()
+  @Roles(ROLE.admin)
   async getAll(): Promise<IOrder[]> {
     return this.orderService.find();
   }
 
+  @Get('/me')
+  async getMyOrders(@User() user: IUser): Promise<IOrder[]> {
+    return this.orderService.findByUser(user._id);
+  }
+
   @Get('/:id')
-  @Public()
+  @Roles(ROLE.admin)
   async getOne(@Param('id') id: string): Promise<IOrder> {
     return this.orderService.findOne(id);
   }
