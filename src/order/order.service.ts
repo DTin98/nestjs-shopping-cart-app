@@ -56,7 +56,7 @@ export class OrderService {
       );
 
       // create order
-      const order = await this.orderModel.create(
+      const order = new this.orderModel(
         {
           tax: TAX_DEFAULT,
           subTotal: SUB_TOTAL_DEFAULT,
@@ -72,8 +72,9 @@ export class OrderService {
             addressLine2: createOrderCartDto.address.addressLine2,
           },
         },
-        { session },
       );
+
+      const newOrder = await order.save({ session })
 
       for (const cartItem of userCart.cartItems) {
         const orderItem = await this.orderItemModel.create(
@@ -89,7 +90,7 @@ export class OrderService {
       }
 
       // update orderItems to order
-      total = subTotal + order.tax - order.discount;
+      total = subTotal + newOrder.tax - newOrder.discount;
       await this.orderModel.updateOne(
         { _id: order._id },
         { cartId: userCart._id, orderItems: orderItemIds, subTotal: subTotal, total: total },
@@ -97,9 +98,10 @@ export class OrderService {
       );
       await session.commitTransaction();
       return await this.orderModel
-        .findOne({ _id: order._id })
+        .findOne({ _id: newOrder._id })
         .populate('orderItems', null, null, { populate: { path: 'product' } });
     } catch (error) {
+      console.error(error)
       await session.abortTransaction();
       throw error;
     } finally {
