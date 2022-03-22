@@ -121,6 +121,7 @@ export class OrderService {
   }
 
   async update(id: string, updateOrderCartDto: UpdateOrderCartDto): Promise<IOrder> {
+    const order = await this.orderModel.findOne({ _id: id });
     await this.orderModel
       .updateOne({ _id: id }, updateOrderCartDto);
 

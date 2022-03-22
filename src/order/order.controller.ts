@@ -19,6 +19,7 @@ import { IUser } from 'src/user/interfaces/user.interface';
 import { CartService } from 'src/cart/cart.service';
 import { Roles } from 'src/shared/decorators/role.decorator';
 import { ROLE } from 'src/user/enums/role.enum';
+import { UpdateOrderCartDto } from './dto/update-order.dto';
 
 @Controller('orders')
 @ApiTags('order')
@@ -57,22 +58,13 @@ export class OrderController {
     }
   }
 
-  @Patch('/')
+  @Patch('/:id')
   @Roles(ROLE.admin)
-  async update(
-    @User() user: IUser,
-    @Body(new ValidationPipe()) createOrderCartDto: CreateOrderCartDto,
-  ): Promise<IOrder> {
+  async update(@Param('id') id: string, @Body(new ValidationPipe()) updateOrderCartDto: UpdateOrderCartDto,): Promise<IOrder> {
     try {
-      return this.orderService.orderCart(user._id, createOrderCartDto);
+      return this.orderService.update(id, updateOrderCartDto);
     } catch (e) {
       throw new BadRequestException(e.message);
     }
-  }
-
-  @Delete('/:id')
-  @Public()
-  async delete(@Param('id') id: string): Promise<{ ok?: number; n?: number }> {
-    return this.orderService.delete(id);
   }
 }
