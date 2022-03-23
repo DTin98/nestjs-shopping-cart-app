@@ -14,7 +14,7 @@ export const userSchema = new mongoose.Schema({
   avatarId: { type: String, default: null },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
-  gender: { type: String, required: true, enum: Object.values(GENDER) },
+  gender: { type: String, enum: Object.values(GENDER) },
   address: { type: String, default: '' },
   phone: { type: String, default: null, required: true },
   roles: { type: [String], required: true, enum: Object.values(ROLE) },

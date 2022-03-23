@@ -24,10 +24,9 @@ export class CreateUserDto {
     @IsNotEmpty()
     readonly lastName: string;
 
-    @ApiProperty()
+    @IsOptional()
     @ApiPropertyOptional()
     @IsString()
-    @IsNotEmpty()
     @IsEnum(GENDER)
     readonly gender: GENDER;
 
