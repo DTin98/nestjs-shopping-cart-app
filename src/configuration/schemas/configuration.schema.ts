@@ -17,6 +17,7 @@ export const configurationSchema = new mongoose.Schema(
       email: { type: String, default: '' },
       address: { type: String, default: '' },
       bankAccount: { type: String, default: '' },
+      bankAccountName: { type: String, default: '' },
       bankName: { type: String, default: '' },
     },
   },

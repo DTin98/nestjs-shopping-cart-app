@@ -15,6 +15,8 @@ export class Contact {
   @ApiProperty()
   bankAccount: string;
   @ApiProperty()
+  bankAccountName: string;
+  @ApiProperty()
   bankName: string;
 }
 
