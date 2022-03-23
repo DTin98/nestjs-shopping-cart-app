@@ -8,7 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { configModule } from './configure.root';
 import { TokenModule } from './token/token.module';
 import { MailModule } from './mail/mail.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { RolesGuard } from './shared/guards/roles.guard';
 import { ProductModule } from './product/product.module';
@@ -20,6 +20,7 @@ import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './orderItem/orderItem.module';
 import { AppController } from './app.controller';
 import { ConfigurationModule } from './configuration/configuration.module';
+import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
 
 @Module({
   imports: [
@@ -50,6 +51,10 @@ import { ConfigurationModule } from './configuration/configuration.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
+    },
   ],
 })
-export class AppModule {}
+export class AppModule { }
