@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 import { User } from 'src/shared/decorators/user.decorator';
 import { USER_SENSITIVE_FIELDS } from './enums/protected-fields.enum';
 import { IReadableUser } from './interfaces/readable-user.interface';
@@ -19,6 +19,18 @@ export class UserController {
   @Roles(ROLE.admin)
   async get(): Promise<IReadableUser[]> {
     const _user = await this.userService.find();
+    return _user.map(user =>
+      _.omit<any>(
+        user,
+        Object.values(USER_SENSITIVE_FIELDS),
+      ) as IReadableUser
+    )
+  }
+
+  @Patch('/:id')
+  @Roles(ROLE.admin)
+  async update(@Param('id') id: string, @Body() payload: Partial<IUser>): Promise<IReadableUser[]> {
+    const _user = await this.userService.update(id, payload);
     return _user.map(user =>
       _.omit<any>(
         user,
