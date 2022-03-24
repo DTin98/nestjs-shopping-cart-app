@@ -5,10 +5,27 @@ import { IReadableUser } from './interfaces/readable-user.interface';
 import { IUser } from './interfaces/user.interface';
 import { UserService } from './user.service';
 import * as _ from 'lodash';
+import { ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/shared/decorators/role.decorator';
+import { ROLE } from './enums/role.enum';
+import { Public } from 'src/shared/decorators/public.decorator';
 
+@ApiTags('user')
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
+
+  @Get()
+  @Roles(ROLE.admin)
+  async get(): Promise<IReadableUser[]> {
+    const _user = await this.userService.find();
+    return _user.map(user =>
+      _.omit<any>(
+        user,
+        Object.values(USER_SENSITIVE_FIELDS),
+      ) as IReadableUser
+    )
+  }
 
   @Get('/me')
   async getMe(@User() user: IUser): Promise<IReadableUser> {

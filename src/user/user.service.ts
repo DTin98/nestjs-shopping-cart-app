@@ -14,7 +14,7 @@ import { SALT_ROUNDS } from './constant';
 export class UserService {
   private readonly saltRounds = SALT_ROUNDS;
 
-  constructor(@InjectModel('User') private readonly userModel: Model<IUser>) {}
+  constructor(@InjectModel('User') private readonly userModel: Model<IUser>) { }
 
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(this.saltRounds);
@@ -32,6 +32,10 @@ export class UserService {
       _.assignIn(createUserDto, { password: hash, roles, status }),
     );
     return await createdUser.save({ ...options });
+  }
+
+  async find(): Promise<IUser[]> {
+    return await this.userModel.find().exec();
   }
 
   async findOne(id: string): Promise<IUser> {
