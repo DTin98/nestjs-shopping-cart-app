@@ -67,11 +67,7 @@ export class OrderService {
           phone: createOrderCartDto.phone || user.phone,
           email: createOrderCartDto.email || user.email,
           shipping: SHIPPING_DEFAULT,
-          address: {
-            city: createOrderCartDto.address.city,
-            addressLine1: createOrderCartDto.address.addressLine1,
-            addressLine2: createOrderCartDto.address.addressLine2,
-          },
+          address: createOrderCartDto.address || user.address,
         },
       );
 

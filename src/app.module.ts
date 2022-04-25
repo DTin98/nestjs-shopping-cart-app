@@ -21,6 +21,7 @@ import { OrderItemModule } from './orderItem/orderItem.module';
 import { AppController } from './app.controller';
 import { ConfigurationModule } from './configuration/configuration.module';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { TransformInterceptor } from './shared/interceptors/transform.intercepto
     OrderModule,
     OrderItemModule,
     ConfigurationModule,
+    PostModule,
     MongooseModule.forRoot(process.env.MONGODB_WRITE_CONNECTION_STRING, {
       useNewUrlParser: true,
       useUnifiedTopology: true,

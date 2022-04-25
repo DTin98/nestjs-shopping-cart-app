@@ -1,16 +1,14 @@
 import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateOrderCartDto {
+export class CreatePostDto {
   @IsNotEmpty()
   @ApiProperty()
-  phone: string;
+  title: string;
 
-  @IsNotEmpty()
   @ApiProperty()
-  email: string;
+  content: string;
 
-  @IsNotEmpty()
   @ApiProperty()
-  address: string
+  image: string;
 }
