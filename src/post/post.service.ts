@@ -32,6 +32,10 @@ export class PostService {
     return await this.postModel.findOne({ _id: id }).exec();
   }
 
+  async findOneBySlug(slug: string): Promise<IPost> {
+    return await this.postModel.findOne({ slug }).exec();
+  }
+
   async findOneByTitle(title: string): Promise<IPost> {
     return await this.postModel.findOne({ title }).exec();
   }

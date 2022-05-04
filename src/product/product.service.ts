@@ -11,7 +11,8 @@ import { PRODUCT } from './schemas/product.schema';
 @Injectable()
 export class ProductService {
     constructor(
-        @InjectModel(PRODUCT) private readonly productModel: Model<IProduct>,
+        @InjectModel(PRODUCT)
+        private readonly productModel: Model<IProduct>,
         @InjectModel(PRODUCT_META)
         private readonly productMetaModel: Model<IProductMeta>,
     ) { }
@@ -48,11 +49,14 @@ export class ProductService {
         return await this.productModel.findOne({ _id: id }).exec();
     }
 
+    async findOneBySlug(slug: string): Promise<IProduct> {
+        return await this.productModel.findOne({ slug }).exec();
+    }
+
     async update(
         id: string,
         updateProductDto: UpdateProductDto,
     ): Promise<IProduct> {
-        console.log("🚀 ~ file: product.service.ts ~ line 55 ~ ProductService ~ id", id)
         //find product by id if exist then throw error
         const product = await this.productModel.findOne({ _id: id });
         if (!product) throw new BadRequestException('Product id is not found');

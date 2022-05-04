@@ -8,7 +8,7 @@ export const PRODUCT = 'Product';
 export const productSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, unique: true },
-    slug: { type: String, unique: true },
+    slug: { type: String, index: { unique: true } },
     quantity: { type: Number, default: 0 },
     price: { type: Number, default: 0 },
     maxPrice: { type: Number, default: 0 },
@@ -28,7 +28,7 @@ export const productSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-productSchema.pre<IProduct>('save', function(next) {
+productSchema.pre<IProduct>('save', function (next) {
   this.slug = toSlug(this.title);
   next();
 });

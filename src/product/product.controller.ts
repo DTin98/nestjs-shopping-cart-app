@@ -4,7 +4,6 @@ import {
     Delete,
     Get,
     Param,
-    ParseUUIDPipe,
     Patch,
     Post,
     ValidationPipe,
@@ -33,6 +32,12 @@ export class ProductController {
     @Public()
     async getOne(@Param('id') id: string): Promise<IProduct> {
         return await this.productService.findOne(id);
+    }
+
+    @Get('/:slug')
+    @Public()
+    async getSlug(@Param('slug') slug: string): Promise<IProduct> {
+        return this.productService.findOneBySlug(slug);
     }
 
     @Post('/')

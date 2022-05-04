@@ -1,6 +1,4 @@
 import * as mongoose from 'mongoose';
-import { toSlug } from 'src/utils/string.util';
-import { IOrderItem } from '../interfaces/orderItem.interface';
 
 export const orderItemSchema = new mongoose.Schema(
   {

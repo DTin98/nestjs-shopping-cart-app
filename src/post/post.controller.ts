@@ -25,7 +25,7 @@ import { Roles } from 'src/shared/decorators/role.decorator';
 @Controller('post')
 @ApiTags('posts')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) { }
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -39,6 +39,13 @@ export class PostController {
   @Public()
   async findOne(@Param('id') id: string): Promise<IPost> {
     return await this.postService.findOne(id);
+  }
+
+  @Get(':slug')
+  @HttpCode(HttpStatus.OK)
+  @Public()
+  async findOneBySlug(@Param('slug') slug: string): Promise<IPost> {
+    return await this.postService.findOneBySlug(slug);
   }
 
   @Post()
