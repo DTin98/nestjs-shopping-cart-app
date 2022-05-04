@@ -16,7 +16,7 @@ export class PostService {
   ) { }
 
   async create(createPostDto: CreatePostDto): Promise<IPost> {
-    const post = this.findOneByTitle(createPostDto.title);
+    const post = await this.findOneByTitle(createPostDto.title);
     if (post) {
       throw new BadRequestException('Post already exists!');
     }
