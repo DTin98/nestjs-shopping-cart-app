@@ -41,7 +41,7 @@ export class PostController {
     return await this.postService.findOne(id);
   }
 
-  @Get(':slug')
+  @Get('/slug/:slug')
   @HttpCode(HttpStatus.OK)
   @Public()
   async findOneBySlug(@Param('slug') slug: string): Promise<IPost> {

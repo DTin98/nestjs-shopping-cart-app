@@ -34,7 +34,7 @@ export class ProductController {
         return await this.productService.findOne(id);
     }
 
-    @Get('/:slug')
+    @Get('/slug/:slug')
     @Public()
     async getSlug(@Param('slug') slug: string): Promise<IProduct> {
         return this.productService.findOneBySlug(slug);
