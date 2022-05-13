@@ -19,12 +19,7 @@ export const cartSchema = new mongoose.Schema(
     lastName: { type: String, require: true },
     phone: { type: Number, require: true },
     email: { type: Number, require: true },
-    address: {
-      country: { type: String, default: null },
-      city: { type: String, default: null },
-      addressLine1: { type: String, default: null },
-      addressLine2: { type: String, default: null },
-    },
+    address: {type: String, require: true},
     content: { type: String, default: '' },
   },
   { timestamps: true },
