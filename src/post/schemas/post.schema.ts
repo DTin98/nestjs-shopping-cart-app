@@ -6,10 +6,12 @@ export const POST = 'POST';
 
 export const postSchema = new mongoose.Schema(
   {
-    title: { type: String, default: '' },
-    content: { type: String, default: '' },
-    image: { type: String, default: '' },
-    slug: { type: String, index: { unique: true } },
+      title: {type: String, default: ''},
+      content: {type: String, default: ''},
+      image: {type: String, default: ''},
+      isHighlight: {type: Boolean, default: false},
+
+      slug: {type: String, index: {unique: true}},
   },
   { timestamps: true },
 );
