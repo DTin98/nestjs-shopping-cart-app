@@ -9,8 +9,8 @@ export const postSchema = new mongoose.Schema(
       title: {type: String, default: ''},
       content: {type: String, default: ''},
       image: {type: String, default: ''},
-      isHighlight: {type: Boolean, default: false},
-
+      isHighLight: {type: Boolean, default: false},
+      summary: {type: String, default: ''},
       slug: {type: String, index: {unique: true}},
   },
   { timestamps: true },
