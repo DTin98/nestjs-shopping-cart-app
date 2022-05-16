@@ -7,23 +7,24 @@ export const PRODUCT = 'Product';
 
 export const productSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true, unique: true },
-    slug: { type: String, index: { unique: true } },
-    quantity: { type: Number, default: 0 },
-    price: { type: Number, default: 0 },
-    maxPrice: { type: Number, default: 0 },
-    isHighlight: { type: Boolean, default: false },
-    summary: { type: String, default: '' },
-    content: { type: String, default: '' },
-    rating: { type: Number, default: 0 },
-    productMetaId: { type: mongoose.Schema.Types.ObjectId, ref: 'ProductMeta' },
-    category: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
-    priceBySize: [
-      {
-        price: { type: Number, default: 0, required: true },
-        size: { type: String, enum: Object.values(SIZE), required: true },
-      },
-    ],
+      title: {type: String, required: true, unique: true},
+      slug: {type: String, index: {unique: true}},
+      quantity: {type: Number, default: 0},
+      price: {type: Number, default: 0},
+      image: {type: String, default: ''},
+      maxPrice: {type: Number, default: 0},
+      isHighlight: {type: Boolean, default: false},
+      summary: {type: String, default: ''},
+      content: {type: String, default: ''},
+      rating: {type: Number, default: 0},
+      productMetaId: {type: mongoose.Schema.Types.ObjectId, ref: 'ProductMeta'},
+      category: [{type: mongoose.Schema.Types.ObjectId, ref: 'Category'}],
+      priceBySize: [
+          {
+              price: {type: Number, default: 0, required: true},
+              size: {type: String, enum: Object.values(SIZE), required: true},
+          },
+      ],
   },
   { timestamps: true },
 );
