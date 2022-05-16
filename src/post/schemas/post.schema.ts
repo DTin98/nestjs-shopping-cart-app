@@ -9,7 +9,7 @@ export const postSchema = new mongoose.Schema(
       title: {type: String, default: ''},
       content: {type: String, default: ''},
       image: {type: String, default: ''},
-      isHighLight: {type: Boolean, default: false},
+      isHighlight: {type: Boolean, default: false},
       summary: {type: String, default: ''},
       slug: {type: String, index: {unique: true}},
   },
