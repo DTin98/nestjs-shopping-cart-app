@@ -41,7 +41,7 @@ export class PostService {
   }
 
   async findOneAndUpdate(id: string, updatePostDto: UpdatePostDto): Promise<IPost> {
-    const updatedPost = await this.postModel.findOneAndUpdate({ id }, updatePostDto, { new: true }).exec();
+    const updatedPost = await this.postModel.findOneAndUpdate({_id: id}, updatePostDto).exec();
     if (!updatedPost) {
       throw new BadRequestException('Post not found!');
     }
