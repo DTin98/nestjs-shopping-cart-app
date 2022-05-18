@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 import { toSlug } from 'src/utils/string.util';
-import { IPost } from '../interfaces/post.interface';
+import {IPost} from '../interfaces/post.interface';
+import {v4 as uuidv4} from 'uuid';
 
 export const POST = 'POST';
 
@@ -17,6 +18,6 @@ export const postSchema = new mongoose.Schema(
 );
 
 postSchema.pre<IPost>('save', function (next) {
-  this.slug = toSlug(this.title);
-  next();
+    this.slug = toSlug(this.title) + uuidv4();
+    next();
 });

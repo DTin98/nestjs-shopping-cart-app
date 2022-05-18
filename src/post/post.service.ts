@@ -16,12 +16,12 @@ export class PostService {
   ) { }
 
   async create(createPostDto: CreatePostDto): Promise<IPost> {
-    const post = await this.findOneByTitle(createPostDto.title);
-    if (post) {
-      throw new BadRequestException('Post already exists!');
-    }
-    const createdPost = new this.postModel(createPostDto);
-    return await createdPost.save();
+      // const post = await this.findOneByTitle(createPostDto.title);
+      // if (post) {
+      //   throw new BadRequestException('Post already exists!');
+      // }
+      const createdPost = new this.postModel(createPostDto);
+      return await createdPost.save();
   }
 
   async findAll(): Promise<IPost[]> {
@@ -41,11 +41,11 @@ export class PostService {
   }
 
   async findOneAndUpdate(id: string, updatePostDto: UpdatePostDto): Promise<IPost> {
-    const updatedPost = await this.postModel.findOneAndUpdate({_id: id}, updatePostDto).exec();
-    if (!updatedPost) {
-      throw new BadRequestException('Post not found!');
-    }
-    return updatedPost;
+      const updatedPost = await this.postModel.findOneAndUpdate({_id: id}, updatePostDto).exec();
+      // if (!updatedPost) {
+      //   throw new BadRequestException('Post id not found!');
+      // }
+      return updatedPost;
   }
 
   async findOneAndDelete(id: string): Promise<IPost> {
