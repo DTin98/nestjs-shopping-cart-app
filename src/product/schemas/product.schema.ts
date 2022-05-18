@@ -1,7 +1,8 @@
 import * as mongoose from 'mongoose';
 import { toSlug } from 'src/utils/string.util';
 import { SIZE } from '../enums/size.enum';
-import { IProduct } from '../interfaces/product.interface';
+import {IProduct} from '../interfaces/product.interface';
+import {v4 as uuidv4} from 'uuid';
 
 export const PRODUCT = 'Product';
 
@@ -30,8 +31,8 @@ export const productSchema = new mongoose.Schema(
 );
 
 productSchema.pre<IProduct>('save', function (next) {
-  this.slug = toSlug(this.title);
-  next();
+    this.slug = toSlug(this.title) + uuidv4();
+    next();
 });
 
 productSchema.virtual('productMeta', {

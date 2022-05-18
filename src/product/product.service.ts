@@ -18,13 +18,13 @@ export class ProductService {
     ) { }
 
     async create(createProductDto: CreateProductDto): Promise<IProduct> {
-        //find product by title if exist then throw error
-        const product = await this.productModel.findOne({
-            title: createProductDto.title,
-        });
+        // find product by title if exist then throw error
+        // const product = await this.productModel.findOne({
+        //     title: createProductDto.title,
+        // });
 
-        if (product)
-            throw new BadRequestException('Product title is already exist');
+        // if (product)
+        //     throw new BadRequestException('Product title is already exist');
 
         if (createProductDto.productMeta) {
             const newProductMeta = await new this.productMetaModel(
@@ -57,9 +57,9 @@ export class ProductService {
         id: string,
         updateProductDto: UpdateProductDto,
     ): Promise<IProduct> {
-        //find product by id if exist then throw error
+        // find product by id if exist then throw error
         const product = await this.productModel.findOne({ _id: id });
-        if (!product) throw new BadRequestException('Product id is not found');
+        // if (!product) throw new BadRequestException('Product id is not found');
 
         if (updateProductDto.productMeta) {
             await this.productMetaModel.updateOne({ _id: product.productMetaId }, updateProductDto.productMeta);
@@ -71,7 +71,9 @@ export class ProductService {
 
     async delete(id: string): Promise<{ ok?: number; n?: number }> {
         const product = await this.findOne(id);
-        if (!product) throw new BadRequestException('Product id is not found');
-        return await this.productModel.deleteOne({ _id: id });
+        if (!product) {
+            throw new BadRequestException('Product id is not found');
+        }
+        return this.productModel.deleteOne({_id: id});
     }
 }
