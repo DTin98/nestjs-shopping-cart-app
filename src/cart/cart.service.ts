@@ -18,7 +18,7 @@ export class CartService {
 
   async getUserCart(userId: string): Promise<ICart> {
     return this.cartModel
-      .findOne({ userId: userId })
+        .findOne({userId})
       .populate('cartItems', null, null, { populate: { path: 'product' } });
   }
 
@@ -37,25 +37,27 @@ export class CartService {
     if (!!cart) {
       return await this.addProductToCart(cart._id, productId);
     }
-    const newCart = new this.cartModel({ userId: userId, ...createCartDto });
+    const newCart = new this.cartModel({userId, ...createCartDto});
     await newCart.save();
     return await this.addProductToCart(newCart._id, productId);
   }
 
   async addProductToCart(cartId: string, productId: string): Promise<ICart> {
     const product = await this.productService.findOne(productId);
-    if (!product) throw new BadRequestException('Product id is not found');
+    if (!product) {
+      throw new BadRequestException('Product id is not found');
+    }
 
     const newCartItem = await this.cartItemService.create({
-      productId: productId,
+      productId,
     });
     await this.cartModel.updateOne(
-      { _id: cartId },
-      { $addToSet: { cartItems: newCartItem } },
+        {_id: cartId},
+        {$addToSet: {cartItems: newCartItem}},
     );
-    return await this.cartModel
-      .findOne({ _id: cartId })
-      .populate('cartItems', null, null, { populate: { path: 'product' } });
+    return this.cartModel
+        .findOne({_id: cartId})
+        .populate('cartItems', null, null, {populate: {path: 'product'}});
   }
 
   async addProductToUserCart(
@@ -65,7 +67,7 @@ export class CartService {
     const cart = await this.findOneByUser(userId);
     if (!!cart) {
       const cartItem = await this.cartItemService.create({
-        productId: productId,
+        productId,
       });
       await this.cartModel.updateOne(
         { _id: cart._id },
@@ -80,14 +82,16 @@ export class CartService {
   }
 
   async findOneByUser(userId: string): Promise<ICart> {
-    return this.cartModel.findOne({ userId: userId });
+    return this.cartModel.findOne({userId});
   }
 
   async update(cartId: string, updateCartDto: UpdateCartDto): Promise<ICart> {
     const cart = await this.cartModel
       .findOne({ _id: cartId })
       .populate('cartItems');
-    if (!cart) throw new BadRequestException('Cart id is not found');
+    if (!cart) {
+      throw new BadRequestException('Cart id is not found');
+    }
 
     const cartItemsIds = cart.cartItems.map(e => e._id);
     const cartItemIdsToUpdate = updateCartDto.cartItems.filter(e =>
@@ -95,12 +99,14 @@ export class CartService {
     );
 
     for (const cartItem of cartItemIdsToUpdate) {
-      if (cartItem.quantity)
+      if (cartItem.quantity) {
         await this.cartItemService.updateQuantity(
-          cartItem.id,
-          cartItem.quantity,
+            cartItem.id,
+            cartItem.quantity,
         );
-      else await this.cartItemService.delete(cartItem.id);
+      } else {
+        await this.cartItemService.delete(cartItem.id);
+      }
     }
 
     return await this.getCart(cart._id);
@@ -112,9 +118,10 @@ export class CartService {
   ): Promise<{ ok?: number; n?: number }> {
     const userCart = await this.findOneByUser(userId);
     if (
-      !userCart.cartItems.find(e => e._id.toString() === cartItemId.toString())
-    )
+        !userCart.cartItems.find(e => e._id.toString() === cartItemId.toString())
+    ) {
       throw new BadRequestException('Cart item id is not found');
+    }
 
     return await this.cartItemService.delete(cartItemId);
   }

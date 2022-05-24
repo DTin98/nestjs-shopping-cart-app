@@ -14,7 +14,8 @@ import { SALT_ROUNDS } from './constant';
 export class UserService {
   private readonly saltRounds = SALT_ROUNDS;
 
-  constructor(@InjectModel('User') private readonly userModel: Model<IUser>) { }
+  constructor(@InjectModel('User') private readonly userModel: Model<IUser>) {
+  }
 
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(this.saltRounds);
@@ -22,16 +23,16 @@ export class UserService {
   }
 
   async create(
-    createUserDto: CreateUserDto,
-    roles: string[],
-    status: STATUS,
-    options?: mongoose.ConnectionOptions,
+      createUserDto: CreateUserDto,
+      roles: string[],
+      status: STATUS,
+      options?: mongoose.ConnectionOptions,
   ): Promise<IUser> {
     const hash = await this.hashPassword(createUserDto.password);
     const createdUser = new this.userModel(
-      _.assignIn(createUserDto, { password: hash, roles, status }),
+        _.assignIn(createUserDto, {password: hash, roles, status}),
     );
-    return await createdUser.save({ ...options });
+    return await createdUser.save({...options});
   }
 
   async find(): Promise<IUser[]> {
@@ -43,14 +44,19 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<IUser> {
-    return await this.userModel.findOne({ email }).exec();
+    return await this.userModel.findOne({email}).exec();
   }
 
   async findByPhone(phone: string): Promise<IUser> {
-    return await this.userModel.findOne({ phone }).exec();
+    return await this.userModel.findOne({phone}).exec();
   }
 
   async update(id: string, payload: Partial<IUser>) {
-    return this.userModel.updateOne({ _id: id }, payload);
+    return this.userModel.updateOne({_id: id}, payload);
+  }
+
+  async findOneAndUpdate(id: string, payload: Partial<IUser>) {
+    await this.userModel.update({_id: id}, payload).exec();
+    return await this.userModel.findById(id).exec();
   }
 }
