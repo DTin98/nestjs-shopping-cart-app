@@ -10,7 +10,7 @@ export class PriceBySize {
   price: number;
 
   @IsNotEmpty()
-  @ApiProperty({ enum: SIZE, example: SIZE.oneKilograms })
+  @ApiProperty({enum: SIZE, example: SIZE._1kg})
   @IsEnum(SIZE)
   size: SIZE;
 }

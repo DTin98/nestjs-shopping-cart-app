@@ -1,5 +1,5 @@
 export enum SIZE {
-  trial = 'trial',
-  oneKilograms = '1kg',
-  fiveHundredGram = '500g',
+  _250g = '_250g',
+  _1kg = '1kg',
+  _500g = '500g',
 }
