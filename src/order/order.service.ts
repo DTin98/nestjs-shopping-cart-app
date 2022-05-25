@@ -74,29 +74,33 @@ export class OrderService {
       const newOrder = await order.save({ session })
 
       for (const cartItem of userCart.cartItems) {
-        const orderItem = await this.orderItemModel.create(
-          {
-            orderId: order._id,
-            productId: cartItem.productId,
-            quantity: cartItem.quantity,
-          },
-          { session },
+        const orderItem = new this.orderItemModel({
+              orderId: order._id,
+              productId: cartItem.productId,
+              quantity: cartItem.quantity,
+              size: cartItem.size,
+            },
         );
+        await orderItem.save({session});
         subTotal += cartItem.product.price * cartItem.quantity;
         orderItemIds.push(orderItem._id);
       }
 
+
       // update orderItems to order
       total = subTotal + newOrder.tax - newOrder.discount;
       await this.orderModel.updateOne(
-        { _id: order._id },
-        { cartId: userCart._id, orderItems: orderItemIds, subTotal: subTotal, total: total },
-        { session },
+          {_id: order._id},
+          {cartId: userCart._id, orderItems: orderItemIds, subTotal: subTotal, total: total},
+          {session},
       );
+      //remove cart
+      await this.cartModel.deleteOne({_id: userCart._id}, {session});
+
       await session.commitTransaction();
       return await this.orderModel
-        .findOne({ _id: newOrder._id })
-        .populate('orderItems', null, null, { populate: { path: 'product' } });
+          .findOne({_id: newOrder._id})
+          .populate('orderItems', null, null, {populate: {path: 'product'}});
     } catch (error) {
       console.error(error)
       await session.abortTransaction();

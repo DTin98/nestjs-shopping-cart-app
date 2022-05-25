@@ -6,7 +6,8 @@ import { ICartItem } from 'src/cartItem/interfaces/cartItem.interface';
 import { ProductService } from 'src/product/product.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
-import { ICart } from './interfaces/cart.interface';
+import {ICart} from './interfaces/cart.interface';
+import {SIZE} from "../product/enums/size.enum";
 
 @Injectable()
 export class CartService {
@@ -35,14 +36,14 @@ export class CartService {
   ): Promise<ICart> {
     const cart = await this.findOneByUser(userId);
     if (!!cart) {
-      return await this.addProductToCart(cart._id, productId);
+      return await this.addProductToCart(cart._id, productId, createCartDto.size);
     }
     const newCart = new this.cartModel({userId, ...createCartDto});
     await newCart.save();
-    return await this.addProductToCart(newCart._id, productId);
+    return await this.addProductToCart(newCart._id, productId, createCartDto.size);
   }
 
-  async addProductToCart(cartId: string, productId: string): Promise<ICart> {
+  async addProductToCart(cartId: string, productId: string, size: SIZE): Promise<ICart> {
     const product = await this.productService.findOne(productId);
     if (!product) {
       throw new BadRequestException('Product id is not found');
@@ -50,6 +51,7 @@ export class CartService {
 
     const newCartItem = await this.cartItemService.create({
       productId,
+      size,
     });
     await this.cartModel.updateOne(
         {_id: cartId},
@@ -61,13 +63,15 @@ export class CartService {
   }
 
   async addProductToUserCart(
-    userId: string,
-    productId: string,
+      userId: string,
+      productId: string,
+      size: SIZE,
   ): Promise<ICart> {
     const cart = await this.findOneByUser(userId);
     if (!!cart) {
       const cartItem = await this.cartItemService.create({
         productId,
+        size,
       });
       await this.cartModel.updateOne(
         { _id: cart._id },
