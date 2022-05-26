@@ -8,6 +8,12 @@ export const cartItemSchema = new mongoose.Schema(
             ref: 'Product',
             require: true,
         },
+        cartId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Cart',
+            require: true,
+        },
+        name: {type: String, require: true},
         size: {type: String, enum: Object.values(SIZE), required: true},
         discount: {type: Number, default: 0},
         quantity: {type: Number, default: 1},

@@ -7,9 +7,17 @@ export class CreateCartItemDto {
   @ApiProperty()
   productId: string;
 
+  @IsNotEmpty()
+  @ApiProperty()
+  cartId: string;
+
   @ApiProperty()
   @IsOptional()
   quantity?: number;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  name: string;
 
   @ApiProperty()
   @IsEnum(SIZE)

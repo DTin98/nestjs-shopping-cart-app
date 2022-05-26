@@ -11,14 +11,14 @@ export class CartItemService {
   ) {}
 
   async create(createCartItemDto: CreateCartItemDto): Promise<ICartItem> {
-    const { productId } = createCartItemDto;
-    const existedCartItem: ICartItem = await this.findByProduct(productId);
+    const {cartId, productId, name} = createCartItemDto;
+    const existedCartItem: ICartItem = await this.findByProduct(productId, name);
     if (existedCartItem) {
       await this.cartItemModel.updateOne(
-        { _id: existedCartItem._id },
-        { $inc: { quantity: +1 } },
+          {cartId, _id: existedCartItem._id, name},
+          {$inc: {quantity: +1}},
       );
-      return await this.cartItemModel.findOne({ _id: existedCartItem._id });
+      return await this.cartItemModel.findOne({_id: existedCartItem._id});
     }
     const cartItem: ICartItem = new this.cartItemModel(createCartItemDto);
     return cartItem.save();
@@ -28,16 +28,16 @@ export class CartItemService {
     return;
   }
 
-  async findByProduct(productId: string): Promise<ICartItem> {
-    return this.cartItemModel.findOne({ productId: productId });
+  async findByProduct(productId: string, name: string): Promise<ICartItem> {
+    return this.cartItemModel.findOne({productId: productId, name: name});
   }
 
   async findOne(id: string): Promise<ICartItem> {
-    return this.cartItemModel.findOne({ _id: id });
+    return this.cartItemModel.findOne({_id: id});
   }
 
   async updateQuantity(id: string, quantity: number) {
-    return this.cartItemModel.updateOne({ _id: id }, { quantity: quantity });
+    return this.cartItemModel.updateOne({_id: id}, {quantity: quantity});
   }
 
   async delete(id: string): Promise<{ ok?: number; n?: number }> {

@@ -50,8 +50,10 @@ export class CartService {
     }
 
     const newCartItem = await this.cartItemService.create({
+      cartId,
       productId,
       size,
+      name: product.title + ' - ' + size,
     });
     await this.cartModel.updateOne(
         {_id: cartId},
@@ -65,13 +67,17 @@ export class CartService {
   async addProductToUserCart(
       userId: string,
       productId: string,
+      cartId: string,
       size: SIZE,
+      name: string,
   ): Promise<ICart> {
     const cart = await this.findOneByUser(userId);
     if (!!cart) {
       const cartItem = await this.cartItemService.create({
+        cartId,
         productId,
         size,
+        name,
       });
       await this.cartModel.updateOne(
         { _id: cart._id },
