@@ -129,7 +129,7 @@ export class OrderService {
     async find(): Promise<IOrder[]> {
         return this.orderModel
             .find()
-            .sort({updateAt: -1})
+            .sort({updateAt: 1})
             .populate('orderItems', null, null, {populate: {path: 'product'}});
     }
 
