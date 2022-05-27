@@ -90,7 +90,6 @@ export class OrderService {
                 orderItemIds.push(orderItem._id);
             }
 
-
             // update orderItems to order
             total = subTotal + newOrder.tax - newOrder.discount;
             await this.orderModel.updateOne(
@@ -105,7 +104,6 @@ export class OrderService {
             await this.cartItemModel.deleteMany({}, {session});
 
             //decrease product quantity
-            console.log(orderItemIds);
             for (const id of orderItemIds) {
                 const orderItemProduct = await this.orderItemModel.findOne({_id: id.toString()}).populate('product').session(session);
                 // console.log(orderItemProduct);
@@ -131,6 +129,7 @@ export class OrderService {
     async find(): Promise<IOrder[]> {
         return this.orderModel
             .find()
+            .sort({updateAt: -1})
             .populate('orderItems', null, null, {populate: {path: 'product'}});
     }
 
