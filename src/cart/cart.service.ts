@@ -21,10 +21,12 @@ export class CartService {
     const cart = await this.cartModel
         .findOne({userId})
         .populate('cartItems', null, null, {populate: {path: 'product'}});
-    //check if product has priceBySize is 0
-    for (const cartItem of cart.cartItems) {
-      if (!cartItem.product.priceBySize.find(p => p.size === cartItem.size)?.price) {
-        await this.cartItemService.delete(cartItem._id);
+    if (!cart.cartItems && !cart.cartItems.length) {
+      //check if product has priceBySize is 0
+      for (const cartItem of cart.cartItems) {
+        if (!cartItem.product.priceBySize.find(p => p.size === cartItem.size)?.price) {
+          await this.cartItemService.delete(cartItem._id);
+        }
       }
     }
     return this.cartModel
