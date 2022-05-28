@@ -27,16 +27,6 @@ export class UserController {
     )
   }
 
-  @Patch('/:id')
-  @Roles(ROLE.admin)
-  async update(@Param('id') id: string, @Body() payload: Partial<IUser>): Promise<IReadableUser> {
-    const user = await this.userService.findOneAndUpdate(id, payload);
-    return _.omit<any>(
-        user,
-        Object.values(USER_SENSITIVE_FIELDS),
-    ) as IReadableUser;
-  }
-
   @Get('/me')
   async getMe(@User() user: IUser): Promise<IReadableUser> {
     const _user = await this.userService.findOne(user._id);
@@ -56,8 +46,18 @@ export class UserController {
     const _user = await this.userService.findOne(user._id);
     const readableUser = _user.toObject() as IReadableUser;
     return _.omit<any>(
-        readableUser,
-        Object.values(USER_SENSITIVE_FIELDS),
+      readableUser,
+      Object.values(USER_SENSITIVE_FIELDS),
+    ) as IReadableUser;
+  }
+
+  @Patch('/:id')
+  @Roles(ROLE.admin)
+  async update(@Param('id') id: string, @Body() payload: Partial<IUser>): Promise<IReadableUser> {
+    const user = await this.userService.findOneAndUpdate(id, payload);
+    return _.omit<any>(
+      user,
+      Object.values(USER_SENSITIVE_FIELDS),
     ) as IReadableUser;
   }
 }
