@@ -36,14 +36,14 @@ export class CartService {
   ): Promise<ICart> {
     const cart = await this.findOneByUser(userId);
     if (!!cart) {
-      return await this.addProductToCart(cart._id, productId, createCartDto.size);
+      return await this.addProductToCart(cart._id, productId, createCartDto.size, createCartDto.quantity);
     }
     const newCart = new this.cartModel({userId, ...createCartDto});
     await newCart.save();
-    return await this.addProductToCart(newCart._id, productId, createCartDto.size);
+    return await this.addProductToCart(newCart._id, productId, createCartDto.size, createCartDto.quantity);
   }
 
-  async addProductToCart(cartId: string, productId: string, size: SIZE): Promise<ICart> {
+  async addProductToCart(cartId: string, productId: string, size: SIZE, quantity: number): Promise<ICart> {
     const product = await this.productService.findOne(productId);
     if (!product) {
       throw new BadRequestException('Product id is not found');
@@ -53,6 +53,7 @@ export class CartService {
       cartId,
       productId,
       size,
+      quantity,
       name: product.title + ' - ' + size,
     });
     await this.cartModel.updateOne(
