@@ -86,8 +86,10 @@ export class OrderService {
                     },
                 );
                 await orderItem.save({session});
-                console.log(cartItem);
-                subTotal += cartItem.product.priceBySize[cartItem.size.toString()] * cartItem.quantity;
+                //get price cartItem
+                console.log('cartItem', cartItem)
+                const price = cartItem.product.priceBySize.find(p => p.size === cartItem.size).price;
+                subTotal += price * cartItem.quantity;
                 orderItemIds.push(orderItem._id);
             }
 

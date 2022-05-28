@@ -18,15 +18,24 @@ export class CartService {
   ) { }
 
   async getUserCart(userId: string): Promise<ICart> {
+    const cart = await this.cartModel
+        .findOne({userId})
+        .populate('cartItems', null, null, {populate: {path: 'product'}});
+    //check if product has priceBySize is 0
+    for (const cartItem of cart.cartItems) {
+      if (!cartItem.product.priceBySize.find(p => p.size === cartItem.size)?.price) {
+        await this.cartItemService.delete(cartItem._id);
+      }
+    }
     return this.cartModel
         .findOne({userId})
-      .populate('cartItems', null, null, { populate: { path: 'product' } });
+        .populate('cartItems', null, null, {populate: {path: 'product'}});
   }
 
   async getCart(cartId: string): Promise<ICart> {
     return this.cartModel
-      .findOne({ _id: cartId })
-      .populate('cartItems', null, null, { populate: { path: 'product' } });
+        .findOne({_id: cartId})
+        .populate('cartItems', null, null, {populate: {path: 'product'}});
   }
 
   async createCartUser(
