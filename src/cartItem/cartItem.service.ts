@@ -16,7 +16,7 @@ export class CartItemService {
     if (existedCartItem) {
       await this.cartItemModel.updateOne(
           {cartId, _id: existedCartItem._id, name},
-          {$inc: {quantity: +1}},
+          {$inc: {quantity: +createCartItemDto.quantity}},
       );
       return await this.cartItemModel.findOne({_id: existedCartItem._id});
     }

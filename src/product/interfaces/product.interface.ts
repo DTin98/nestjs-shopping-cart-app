@@ -14,7 +14,7 @@ export interface IProduct extends Document {
   readonly summary: string;
   readonly content: string;
   readonly rating: number;
-  readonly productBySize: IPriceBySize[];
+  readonly priceBySize: IPriceBySize[];
   productMetaId: string;
   readonly productMeta: IProductMeta;
 }

@@ -86,7 +86,7 @@ export class OrderService {
                     },
                 );
                 await orderItem.save({session});
-                subTotal += cartItem.product.productBySize[cartItem.size] * cartItem.quantity;
+                subTotal += cartItem.product.priceBySize[cartItem.size.toString()] * cartItem.quantity;
                 orderItemIds.push(orderItem._id);
             }
 
