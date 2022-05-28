@@ -8,7 +8,7 @@ export const PRODUCT = 'Product';
 
 export const productSchema = new mongoose.Schema(
   {
-      title: {type: String, required: true, unique: true},
+      title: {type: String, required: true},
       slug: {type: String, index: {unique: true}},
       quantity: {type: Number, default: 0},
       price: {type: Number, default: 0},
