@@ -12,10 +12,11 @@ import {SIZE} from "../product/enums/size.enum";
 @Injectable()
 export class CartService {
   constructor(
-    @InjectModel('Cart') private readonly cartModel: Model<ICart>,
-    private productService: ProductService,
-    private readonly cartItemService: CartItemService,
-  ) { }
+      @InjectModel('Cart') private readonly cartModel: Model<ICart>,
+      private productService: ProductService,
+      private readonly cartItemService: CartItemService,
+  ) {
+  }
 
   async getUserCart(userId: string): Promise<ICart> {
     const cart = await this.cartModel

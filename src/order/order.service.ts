@@ -16,7 +16,9 @@ import {IOrder} from './interfaces/order.interface';
 import {InjectConnection} from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import {UpdateOrderCartDto} from './dto/update-order.dto';
-import {ICartItem} from "../cartItem/interfaces/cartItem.interface";
+import {ICartItem} from '../cartItem/interfaces/cartItem.interface';
+import {MailerService} from '@nestjs-modules/mailer';
+import {IConfiguration} from '../configuration/interfaces/configuration.interface';
 
 @Injectable()
 export class OrderService {
@@ -26,9 +28,10 @@ export class OrderService {
         @InjectModel('CartItem') private readonly cartItemModel: Model<ICartItem>,
         @InjectModel('User') private readonly userModel: Model<IUser>,
         @InjectModel('Product') private readonly productModel: Model<IOrderItem>,
-        @InjectModel('OrderItem')
-        private readonly orderItemModel: Model<IOrderItem>,
+        @InjectModel('Configuration') private readonly configModel: Model<IConfiguration>,
+        @InjectModel('OrderItem') private readonly orderItemModel: Model<IOrderItem>,
         @InjectConnection() private readonly connection: mongoose.Connection,
+        private readonly mailerService: MailerService,
     ) {
     }
 
@@ -36,7 +39,7 @@ export class OrderService {
         userId: string,
         createOrderCartDto: CreateOrderCartDto,
     ): Promise<IOrder> {
-        let orderItemIds = [];
+        const orderItemIds = [];
         let subTotal = 0;
         let total = 0;
 
@@ -45,7 +48,7 @@ export class OrderService {
         try {
             const user: IUser = await this.userModel.findOne({_id: userId});
             const userCart: ICart = await this.cartModel
-                .findOne({userId: userId})
+                .findOne({userId})
                 .populate('cartItems', null, null, {populate: {path: 'product'}});
 
             if (!userCart) {
@@ -62,7 +65,7 @@ export class OrderService {
             // create order
             const order = new this.orderModel(
                 {
-                    userId: userId,
+                    userId,
                     tax: TAX_DEFAULT,
                     subTotal: SUB_TOTAL_DEFAULT,
                     total: TOTAL_DEFAULT,
@@ -75,7 +78,7 @@ export class OrderService {
                 },
             );
 
-            const newOrder = await order.save({session})
+            const newOrder = await order.save({session});
 
             for (const cartItem of userCart.cartItems) {
                 const orderItem = new this.orderItemModel({
@@ -83,11 +86,11 @@ export class OrderService {
                         productId: cartItem.productId,
                         quantity: cartItem.quantity,
                         size: cartItem.size,
+                        price: cartItem.product.priceBySize.find(p => p.size === cartItem.size).price,
                     },
                 );
                 await orderItem.save({session});
-                //get price cartItem
-                console.log('cartItem', cartItem)
+                // get price cartItem
                 const price = cartItem.product.priceBySize.find(p => p.size === cartItem.size).price;
                 subTotal += price * cartItem.quantity;
                 orderItemIds.push(orderItem._id);
@@ -97,16 +100,16 @@ export class OrderService {
             total = subTotal + newOrder.tax - newOrder.discount;
             await this.orderModel.updateOne(
                 {_id: order._id},
-                {cartId: userCart._id, orderItems: orderItemIds, subTotal: subTotal, total: total},
+                {cartId: userCart._id, orderItems: orderItemIds, subTotal, total},
                 {session},
             );
-            //remove cart
+            // remove cart
             await this.cartModel.deleteOne({_id: userCart._id}, {session});
 
-            //remove cartitems
+            // remove cartitems
             await this.cartItemModel.deleteMany({}, {session});
 
-            //decrease product quantity
+            // decrease product quantity
             for (const id of orderItemIds) {
                 const orderItemProduct = await this.orderItemModel.findOne({_id: id.toString()}).populate('product').session(session);
                 // console.log(orderItemProduct);
@@ -117,11 +120,27 @@ export class OrderService {
                 );
             }
             await session.commitTransaction();
+
+            // Send mail to admin
+            const config = await this.configModel.find({}).exec();
+            console.log(config[0].toJSON().contact.email);
+            const mailOptions = {
+                to: config[0].toJSON().contact.email,
+                subject: 'New order',
+                text: `New order: ${order._id}`,
+            };
+            await this.mailerService.sendMail(mailOptions).then(() => {
+                console.log('Email sent');
+            }).catch(err => {
+                console.log(err);
+            })
+
             return await this.orderModel
                 .findOne({_id: newOrder._id})
                 .populate('orderItems', null, null, {populate: {path: 'product'}});
         } catch (error) {
-            console.error(error)
+            // tslint:disable-next-line:no-console
+            console.error(error);
             await session.abortTransaction();
             throw error;
         } finally {
@@ -149,12 +168,14 @@ export class OrderService {
     }
 
     async findByUser(userId: string): Promise<IOrder[]> {
-        return this.orderModel.find({userId: userId}).populate('orderItems', null, null, {populate: {path: 'product'}});
+        return this.orderModel.find({userId}).populate('orderItems', null, null, {populate: {path: 'product'}});
     }
 
     async delete(id: string): Promise<{ ok?: number; n?: number }> {
         const category = await this.findOne(id);
-        if (!category) throw new BadRequestException('Product id is not found');
+        if (!category) {
+            throw new BadRequestException('Product id is not found');
+        }
         return await this.orderModel.deleteOne({_id: id});
     }
 }
