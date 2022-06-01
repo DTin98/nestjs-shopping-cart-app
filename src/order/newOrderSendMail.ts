@@ -91,7 +91,7 @@ export const newOrderSendMailStr = `<td align="center" valign="top">
                                                                              <%= item.product.title%> - <%= item.size%> </td>
                                                                          <td
                                                                              style="border:1px solid rgb(229,229,229);padding:12px;text-align:left;vertical-align:middle;font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif;color:rgb(99,99,99)">
-                                                                             1 </td>
+                                                                             <%= item.quantity%> </td>
                                                                          <td
                                                                              style="border:1px solid rgb(229,229,229);padding:12px;text-align:left;vertical-align:middle;font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif;color:rgb(99,99,99)">
                                                                              <span
