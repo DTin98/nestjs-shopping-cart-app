@@ -1,16 +1,27 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {NestFactory} from '@nestjs/core';
+import {AppModule} from './app.module';
+import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import * as morgan from 'morgan';
 import {AllExceptionsFilter} from './shared/exceptions/allExceptionFilter.exception';
 import * as bodyParser from 'body-parser';
+import {ExpressAdapter, NestExpressApplication} from '@nestjs/platform-express';
+import * as express from 'express';
+import {join} from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // Creating and setting up the express instanced server
+  const server = express();
+  server.locals.basedir = join(__dirname, '..', 'views');
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, new ExpressAdapter(server));
   app.setGlobalPrefix('api');
   // the next two lines did the trick
   app.use(bodyParser.json({limit: '50mb'}));
   app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('ejs');
+
 
   const options = new DocumentBuilder()
       .addBearerAuth()

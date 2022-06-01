@@ -17,8 +17,11 @@ import {InjectConnection} from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import {UpdateOrderCartDto} from './dto/update-order.dto';
 import {ICartItem} from '../cartItem/interfaces/cartItem.interface';
-import {MailerService} from '@nestjs-modules/mailer';
 import {IConfiguration} from '../configuration/interfaces/configuration.interface';
+import * as nodeMailer from 'nodemailer';
+import * as ejs from 'ejs';
+import * as path from "path";
+import {newOrderSendMailStr} from "./newOrderSendMail";
 
 @Injectable()
 export class OrderService {
@@ -31,7 +34,6 @@ export class OrderService {
         @InjectModel('Configuration') private readonly configModel: Model<IConfiguration>,
         @InjectModel('OrderItem') private readonly orderItemModel: Model<IOrderItem>,
         @InjectConnection() private readonly connection: mongoose.Connection,
-        private readonly mailerService: MailerService,
     ) {
     }
 
@@ -122,22 +124,36 @@ export class OrderService {
             await session.commitTransaction();
 
             // Send mail to admin
+            // create reusable transporter object using the default SMTP transport
+            const smtpConfig = {
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true, // use SSL
+                auth: {
+                    user: 'kaisin1505@gmail.com',
+                    pass: 'Truongdaitin98@gmail',
+                },
+            };
+            const transporter = nodeMailer.createTransport(smtpConfig);
             const config = await this.configModel.find({}).exec();
-            console.log(config[0].toJSON().contact.email);
+            // tslint:disable-next-line:variable-name
+            const _newOrder = await this.orderModel
+                .findOne({_id: newOrder._id})
+                .populate('orderItems', null, null, {populate: {path: 'product'}});
+
+            const compiledFunction = ejs.compile(newOrderSendMailStr);
             const mailOptions = {
                 to: config[0].toJSON().contact.email,
                 subject: 'New order',
-                text: `New order: ${order._id}`,
+                html: compiledFunction({newOrder: _newOrder}),
             };
-            await this.mailerService.sendMail(mailOptions).then(() => {
+            transporter.sendMail(mailOptions).then(() => {
                 console.log('Email sent');
             }).catch(err => {
                 console.log(err);
             })
 
-            return await this.orderModel
-                .findOne({_id: newOrder._id})
-                .populate('orderItems', null, null, {populate: {path: 'product'}});
+            return _newOrder;
         } catch (error) {
             // tslint:disable-next-line:no-console
             console.error(error);

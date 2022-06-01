@@ -28,7 +28,7 @@ import {MailerModule} from '@nestjs-modules/mailer';
         PassportModule.register({defaultStrategy: 'jwt'}),
         MailerModule.forRoot({
             transport: {
-                service: 'gmail',
+                service: 'Gmail',
                 host: 'smtp.gmail.com',
                 auth: {
                     user: 'kaisin1505@gmail.com',
