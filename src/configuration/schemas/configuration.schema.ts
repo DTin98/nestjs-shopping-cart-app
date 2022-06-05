@@ -1,8 +1,6 @@
 import * as mongoose from 'mongoose';
-import { toSlug } from 'src/utils/string.util';
-import { IConfiguration } from '../interfaces/configuration.interface';
 
-export const CONFIGURATION = 'Configuration';
+export const CONFIGURATION = 'CONFIGURATION';
 
 export const configurationSchema = new mongoose.Schema(
   {

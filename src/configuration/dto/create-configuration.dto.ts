@@ -1,5 +1,6 @@
-import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {IsEmail, IsEnum, IsNotEmpty, IsOptional} from 'class-validator';
+import {ApiProperty} from '@nestjs/swagger';
+import {Type} from "class-transformer";
 
 export class Contact {
   @ApiProperty()
@@ -21,18 +22,23 @@ export class Contact {
 }
 
 export class UpdateConfigurationDto {
+  @IsOptional()
   @ApiProperty()
   homePage: string;
 
+  @IsOptional()
   @ApiProperty()
   aboutPage: string;
 
+  @IsOptional()
   @ApiProperty()
   deliveryPolicyPage: string;
 
+  @IsOptional()
   @ApiProperty()
   paymentGuidePage: string;
 
-  @ApiProperty({ type: Contact })
+  @ApiProperty({type: Contact})
+  @Type(() => Contact)
   contact: Contact;
 }

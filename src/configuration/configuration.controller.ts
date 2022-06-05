@@ -29,19 +29,24 @@ export class ConfigurationController {
   @Public()
   async getAll() {
     const config = await this.configurationModel.find();
+    console.log(config);
     return config[0];
   }
   @Patch('/')
   @Roles(ROLE.admin)
   async update(@Body() updateConfigurationDto: UpdateConfigurationDto) {
     const config: IConfiguration[] = await this.configurationModel.find();
-    if (config[0]) {
+    console.log(updateConfigurationDto);
+    console.log(config[0]?._id);
+    if (config[0]?._id) {
+      console.log('update');
       await this.configurationModel.updateOne(
-        { _id: config[0]._id },
-        updateConfigurationDto,
+          {_id: config[0]._id},
+          updateConfigurationDto,
       );
       return await this.getAll();
     } else {
+      console.log('create');
       const newConfig = new this.configurationModel(updateConfigurationDto);
       return await newConfig.save();
     }
