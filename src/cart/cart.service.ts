@@ -26,9 +26,9 @@ export class CartService {
       return cart;
     }
     if (cart.cartItems) {
-      //check if product has priceBySize is 0
+      // check if product has priceBySize is 0
       for (const cartItem of cart.cartItems) {
-        if (!cartItem.product.priceBySize.find(p => p.size === cartItem.size)?.price) {
+        if (!cartItem.product?.priceBySize.find(p => p.size === cartItem.size)?.price) {
           await this.cartItemService.delete(cartItem._id);
         }
       }
