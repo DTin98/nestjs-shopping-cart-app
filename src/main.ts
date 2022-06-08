@@ -36,6 +36,6 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.use(morgan('tiny'));
 
-  await app.listen(4000);
+  await app.listen(4000, '127.0.0.1');
 }
 bootstrap();

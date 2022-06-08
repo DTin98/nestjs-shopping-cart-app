@@ -13,7 +13,6 @@ import {cartItemSchema} from 'src/cartItem/schemas/cartItem.schema';
 import {userSchema} from 'src/user/schemas/user.schema';
 import {productSchema} from '../product/schemas/product.schema';
 import {ProductModule} from 'src/product/product.module';
-import {MailerModule} from '@nestjs-modules/mailer';
 
 @Module({
     imports: [
@@ -26,16 +25,6 @@ import {MailerModule} from '@nestjs-modules/mailer';
         MongooseModule.forFeature([{name: 'OrderItem', schema: orderItemSchema}]),
         MongooseModule.forFeature([{name: 'Configuration', schema: orderItemSchema}]),
         PassportModule.register({defaultStrategy: 'jwt'}),
-        MailerModule.forRoot({
-            transport: {
-                service: 'Gmail',
-                host: 'smtp.gmail.com',
-                auth: {
-                    user: 'kaisin1505@gmail.com',
-                    pass: 'Truongdaitin98@gmail',
-                },
-            },
-        }),
     ],
     providers: [OrderService, CartService, CartItemService],
     controllers: [OrderController],

@@ -20,8 +20,23 @@ import {ICartItem} from '../cartItem/interfaces/cartItem.interface';
 import {IConfiguration} from '../configuration/interfaces/configuration.interface';
 import * as nodeMailer from 'nodemailer';
 import * as ejs from 'ejs';
-import * as path from "path";
-import {newOrderSendMailStr} from "./newOrderSendMail";
+import {newOrderSendMailStr} from './newOrderSendMail';
+import {OAuth2Client} from 'google-auth-library';
+
+const GOOGLE_MAILER_CLIENT_ID = '169014924536-lipa8b1ffp4k3i818a9s595fp7qdn864.apps.googleusercontent.com';
+const GOOGLE_MAILER_CLIENT_SECRET = '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';
+const GOOGLE_MAILER_REFRESH_TOKEN = '1//044Q92yj3xNrfCgYIARAAGAQSNwF-L9IruHBKZg-b_ASGb4kqhSihejVxwytgOQuycizu_e5UjsVbKNeaZQRs_UlJ-HIqCeeoG-c';
+const ADMIN_EMAIL_ADDRESS = 'kaisin1505@gmail.com';
+
+const myOAuth2Client = new OAuth2Client(
+    GOOGLE_MAILER_CLIENT_ID,
+    GOOGLE_MAILER_CLIENT_SECRET,
+    'https://developers.google.com/oauthplayground',
+);
+// Set Refresh Token vào OAuth2Client Credentials
+myOAuth2Client.setCredentials({
+    refresh_token: GOOGLE_MAILER_REFRESH_TOKEN,
+});
 
 @Injectable()
 export class OrderService {
@@ -125,13 +140,21 @@ export class OrderService {
 
             // Send mail to admin
             // create reusable transporter object using the default SMTP transport
+            const myAccessObj = await myOAuth2Client.getAccessToken();
+            const myAccessToken = myAccessObj?.token;
+            console.log('myAccessObj', myAccessObj);
             const smtpConfig = {
-                host: 'smtp.gmail.com',
-                port: 465,
-                secure: true, // use SSL
-                auth: {
-                    user: 'kaisin1505@gmail.com',
-                    pass: 'Truongdaitin98@gmail',
+                transport: {
+                    service: 'Gmail',
+                    secure: true,
+                    auth: {
+                        type: 'OAuth2',
+                        user: ADMIN_EMAIL_ADDRESS,
+                        clientId: GOOGLE_MAILER_CLIENT_ID,
+                        clientSecret: GOOGLE_MAILER_CLIENT_SECRET,
+                        refresh_token: GOOGLE_MAILER_REFRESH_TOKEN,
+                        accessToken: myAccessToken,
+                    },
                 },
             };
             const transporter = nodeMailer.createTransport(smtpConfig);
