@@ -18,25 +18,9 @@ import * as mongoose from 'mongoose';
 import {UpdateOrderCartDto} from './dto/update-order.dto';
 import {ICartItem} from '../cartItem/interfaces/cartItem.interface';
 import {IConfiguration} from '../configuration/interfaces/configuration.interface';
-import * as nodeMailer from 'nodemailer';
 import * as ejs from 'ejs';
 import {newOrderSendMailStr} from './newOrderSendMail';
-import {OAuth2Client} from 'google-auth-library';
-
-const GOOGLE_MAILER_CLIENT_ID = '169014924536-lipa8b1ffp4k3i818a9s595fp7qdn864.apps.googleusercontent.com';
-const GOOGLE_MAILER_CLIENT_SECRET = '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';
-const GOOGLE_MAILER_REFRESH_TOKEN = '1//044Q92yj3xNrfCgYIARAAGAQSNwF-L9IruHBKZg-b_ASGb4kqhSihejVxwytgOQuycizu_e5UjsVbKNeaZQRs_UlJ-HIqCeeoG-c';
-const ADMIN_EMAIL_ADDRESS = 'kaisin1505@gmail.com';
-
-const myOAuth2Client = new OAuth2Client(
-    GOOGLE_MAILER_CLIENT_ID,
-    GOOGLE_MAILER_CLIENT_SECRET,
-    'https://developers.google.com/oauthplayground',
-);
-// Set Refresh Token vào OAuth2Client Credentials
-myOAuth2Client.setCredentials({
-    refresh_token: GOOGLE_MAILER_REFRESH_TOKEN,
-});
+import * as sgMail from '@sendgrid/mail';
 
 @Injectable()
 export class OrderService {
@@ -51,6 +35,7 @@ export class OrderService {
         @InjectConnection() private readonly connection: mongoose.Connection,
     ) {
     }
+
 
     async orderCart(
         userId: string,
@@ -139,25 +124,7 @@ export class OrderService {
             await session.commitTransaction();
 
             // Send mail to admin
-            // create reusable transporter object using the default SMTP transport
-            const myAccessObj = await myOAuth2Client.getAccessToken();
-            const myAccessToken = myAccessObj?.token;
-            console.log('myAccessObj', myAccessObj);
-            const smtpConfig = {
-                transport: {
-                    service: 'Gmail',
-                    secure: true,
-                    auth: {
-                        type: 'OAuth2',
-                        user: ADMIN_EMAIL_ADDRESS,
-                        clientId: GOOGLE_MAILER_CLIENT_ID,
-                        clientSecret: GOOGLE_MAILER_CLIENT_SECRET,
-                        refresh_token: GOOGLE_MAILER_REFRESH_TOKEN,
-                        accessToken: myAccessToken,
-                    },
-                },
-            };
-            const transporter = nodeMailer.createTransport(smtpConfig);
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
             const config = await this.configModel.find({}).exec();
             // tslint:disable-next-line:variable-name
             const _newOrder = await this.orderModel
@@ -165,16 +132,20 @@ export class OrderService {
                 .populate('orderItems', null, null, {populate: {path: 'product'}});
 
             const compiledFunction = ejs.compile(newOrderSendMailStr);
-            const mailOptions = {
+            const msg = {
                 to: config[0].toJSON().contact.email,
-                subject: 'New order',
+                from: 'co.comchayrop@gmail.com',
+                subject: 'Đơn hàng mới',
                 html: compiledFunction({newOrder: _newOrder}),
             };
-            transporter.sendMail(mailOptions).then(() => {
-                console.log('Email sent');
-            }).catch(err => {
-                console.log(err);
-            })
+            sgMail
+                .send(msg)
+                .then(() => {
+                    console.log('Email sent')
+                })
+                .catch((error) => {
+                    console.error(JSON.stringify(error, null, 4));
+                })
 
             return _newOrder;
         } catch (error) {
