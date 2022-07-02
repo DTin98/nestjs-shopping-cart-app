@@ -107,6 +107,18 @@ export const newOrderSendMailStr = `<td align="center" valign="top">
                                                                          style="font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif">
                                                                          <th scope="row" colspan="2"
                                                                              style="border:1px solid rgb(229,229,229);vertical-align:middle;padding:12px;text-align:left;font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif;color:rgb(99,99,99)">
+                                                                             Phí vận chuyển:</th>
+                                                                         <td
+                                                                             style="border:1px solid rgb(229,229,229);vertical-align:middle;padding:12px;text-align:left;font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif;color:rgb(99,99,99)">
+                                                                             <span
+                                                                                 style="font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif">30000&nbsp;<span
+                                                                                     style="font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif">₫</span></span>
+                                                                         </td>
+                                                                     </tr>
+                                                                     <tr
+                                                                         style="font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif">
+                                                                         <th scope="row" colspan="2"
+                                                                             style="border:1px solid rgb(229,229,229);vertical-align:middle;padding:12px;text-align:left;font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif;color:rgb(99,99,99)">
                                                                              Tổng cộng:</th>
                                                                          <td
                                                                              style="border:1px solid rgb(229,229,229);vertical-align:middle;padding:12px;text-align:left;font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif;color:rgb(99,99,99)">

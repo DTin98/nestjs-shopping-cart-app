@@ -99,7 +99,8 @@ export class OrderService {
             }
 
             // update orderItems to order
-            total = subTotal + newOrder.tax - newOrder.discount;
+            const shipFee = 30000;
+            total = subTotal + newOrder.tax + shipFee - newOrder.discount;
             await this.orderModel.updateOne(
                 {_id: order._id},
                 {cartId: userCart._id, orderItems: orderItemIds, subTotal, total},
