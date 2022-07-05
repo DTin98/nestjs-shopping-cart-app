@@ -1,6 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
 
 export const configModule = ConfigModule.forRoot({
-  envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
+  envFilePath: process.env.NODE_ENV === 'dev' ? `.env.development` : `.env`,
   isGlobal: true,
 });
