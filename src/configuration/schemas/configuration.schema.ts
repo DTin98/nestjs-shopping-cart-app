@@ -18,6 +18,8 @@ export const configurationSchema = new mongoose.Schema(
       bankAccountName: { type: String, default: '' },
       bankName: { type: String, default: '' },
     },
+      bannerUrl: { type: String, default: '' },
+      backgroundUrl: { type: String, default: '' },
   },
   { timestamps: true },
 );

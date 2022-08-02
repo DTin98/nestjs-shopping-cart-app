@@ -34,6 +34,7 @@ export class ConfigurationController {
   @Patch('/')
   @Roles(ROLE.admin)
   async update(@Body() updateConfigurationDto: UpdateConfigurationDto) {
+    console.log('updateConfigurationDto: ', updateConfigurationDto);
     const config: IConfiguration[] = await this.configurationModel.find();
     if (config[0]?._id) {
       await this.configurationModel.updateOne(

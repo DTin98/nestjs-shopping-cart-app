@@ -17,4 +17,5 @@ export interface IProduct extends Document {
   readonly priceBySize: IPriceBySize[];
   productMetaId: string;
   readonly productMeta: IProductMeta;
+  readonly bannerUrl: string;
 }

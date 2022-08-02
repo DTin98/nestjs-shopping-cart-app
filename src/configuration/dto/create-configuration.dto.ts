@@ -38,6 +38,14 @@ export class UpdateConfigurationDto {
   @ApiProperty()
   paymentGuidePage: string;
 
+  @IsOptional()
+  @ApiProperty()
+  bannerUrl: string;
+
+  @IsOptional()
+  @ApiProperty()
+  backgroundUrl: string;
+
   @ApiProperty({type: Contact})
   @Type(() => Contact)
   contact: Contact;
