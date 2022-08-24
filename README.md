@@ -41,6 +41,7 @@
 ```FE_APP_URL=http://localhost:3001 //dont care
 ```JS_CODE_MAIL=skkordiy@gmail.com //dont care
 ```SENDGRID_API_KEY=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 //API KEY TO SEND MAIL SERVER SENDGRID IS NOT EMPTY
+```
 
 ## Installation
 
