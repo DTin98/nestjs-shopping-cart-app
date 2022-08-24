@@ -29,7 +29,7 @@
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ### Enviroment
-.env: PRODUCTION ENVIROMENT FILE
+.env: PRODUCTION ENVIROMENT FILE </br>
 .env.development: DEVELOPEMTN ENVIROMENT FILE
 
 ```MONGODB_WRITE_CONNECTION_STRING
