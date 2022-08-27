@@ -59,7 +59,6 @@ export class OrderController {
   }
 
   @Patch('/:id')
-  @Roles(ROLE.admin)
   async update(@Param('id') id: string, @Body(new ValidationPipe()) updateOrderCartDto: UpdateOrderCartDto,): Promise<IOrder> {
     try {
       return this.orderService.update(id, updateOrderCartDto);
