@@ -38,7 +38,8 @@ export class HomeConfigService {
   }
 
   async findOneAndUpdate(updatePostDto: UpdateHomeConfigDto): Promise<IHomeConfig> {
-    const updatedPost = await this.postModel.findOneAndUpdate({}, updatePostDto).exec();
+    const preHomeConfig = await this.postModel.findOne({}).exec();
+    const updatedPost = await this.postModel.findOneAndUpdate({}, { ...preHomeConfig.toJSON(), ...updatePostDto }).exec();
     // if (!updatedPost) {
     //   throw new BadRequestException('Post id not found!');
     // }

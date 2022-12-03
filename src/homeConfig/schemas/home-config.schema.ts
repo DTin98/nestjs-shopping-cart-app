@@ -7,7 +7,11 @@ export const HOME_CONFIG = 'HOME_CONFIG';
 
 export const homeConfigSchema = new mongoose.Schema(
   {
-    bannerUrls: [{ type: String, default: '' }],
+    coverImg: { type: 'string', default: '' },
+    bannerImgs: [{
+      smallImg: { type: 'string', default: '' },
+      largeImg: { type: 'string', default: '' }
+    }],
   },
   { timestamps: true },
 );

@@ -1,8 +1,19 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+
+export class BannerImgs {
+  smallImg: string;
+  largeImg: string;
+}
 
 export class UpdateHomeConfigDto {
-  @IsNotEmpty()
+  @IsOptional()
+  @ApiProperty({ type: BannerImgs })
+  @Type(() => BannerImgs)
+  bannerImgs?: BannerImgs[];
+
+  @IsOptional()
   @ApiProperty()
-  bannerUrls: string[];
+  coverImg?: string;
 }
